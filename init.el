@@ -99,6 +99,16 @@
 (use-package counsel
   :ensure t)
 
+(use-package helpful
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . counsel-describe-varialbe)
+  ([remap describe-key] . helpful-key))
+
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1)
@@ -115,7 +125,7 @@
  '(custom-safe-themes
    '("7a424478cb77a96af2c0f50cfb4e2a88647b3ccca225f8c650ed45b7f50d9525" "991ca4dbb23cab4f45c1463c187ac80de9e6a718edc8640003892a2523cb6259" "da75eceab6bea9298e04ce5b4b07349f8c02da305734f7c0c8c6af7b5eaa9738" "b99e334a4019a2caa71e1d6445fc346c6f074a05fcbb989800ecbe54474ae1b0" "636b135e4b7c86ac41375da39ade929e2bd6439de8901f53f88fde7dd5ac3561" "1a1ac598737d0fcdc4dfab3af3d6f46ab2d5048b8e72bc22f50271fd6d393a00" "251ed7ecd97af314cd77b07359a09da12dcd97be35e3ab761d4a92d8d8cf9a71" "4ff1c4d05adad3de88da16bd2e857f8374f26f9063b2d77d38d14686e3868d8d" default))
  '(package-selected-packages
-   '(company ivy-rich company-box lsp-mode flycheck rustic magit counsel-projectile projectile general dashboard which-key all-the-icons beacon good-scroll doom-themes use-package doom-modeline diminish counsel)))
+   '(vterm dirvish lsp-treemacs lsp-ui helpful company ivy-rich company-box lsp-mode flycheck rustic magit counsel-projectile projectile general dashboard which-key all-the-icons beacon good-scroll doom-themes use-package doom-modeline diminish counsel)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -163,7 +173,10 @@
 ;; Disable line numbers in some scenarios
 (dolist (mode '(org-mode-hook
 	      term-mode-hook
-	      eshell-mode-hook))
+	      eshell-mode-hook
+	      treemacs-mode-hook
+	      shell-mode-hook
+	      vterm-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 ;; Light up the cursor whenever the window scrolls
@@ -189,6 +202,11 @@
   :config
   (dashboard-setup-startup-hook))
 (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+(setq dashboard-items '((recents  . 3)
+                        (projects . 3)
+                        ;;(agenda . 5)
+                        ;;(bookmarks . 5)
+                        ))
 
 (use-package ivy-rich
   :ensure t
@@ -238,43 +256,62 @@
   :ensure t
   :commands (lsp lsp-deferred)
   :hook (lsp-mode lsp-deferred)
-;;  :bind (:map lsp-mode-map
-;;	      ("C-c d" . lsp-describe-thing-at-point)
-;;	      ("C-c a" . lsp-execute-code-action))
-  ;;:bind-keymap ("C-c l" . lsp-command-map)
   :init
   (setq lsp-keymap-prefix "C-c l")
   :config
   (lsp-enable-which-key-integration t))
+;; Increase the amount of data which Emacs reads from the process.
+;; Default value is causing a slowdown, it's too low to handle server responses.
+(setq read-process-output-max (*(* 1024 1024) 3)) ;; 3mb
+
+(setq lsp-headerline-breadcrumb-enable nil)
 
 ;; Better completions
 (use-package company
   :ensure t
   :after lsp-mode
-;;  :hook ((emacs-lisp-mode . (lambda ()
-;;			      (setq-local company-backends '(company-elisp))))
-;;	 (emacs-lisp-mode . company-mode))
-  :hook (lsp-mode . company-mode))
-;;  :bind (:map company-active-map
-;;	      ("<tab>" . company-complete-selection))
-;;        (:map lsp-mode-map
-;;	      ("<tab>" . company-indent-or-complete-common))
+  :hook (lsp-mode . company-mode)
+  :bind (:map company-active-map
+	      ("<tab>" . company-complete-selection))
+        (:map lsp-mode-map
+	      ("<tab>" . company-indent-or-complete-common))
+  :custom
+  (company-minimum-prefix-length 1)
+  (company-idle-delay 0.0))
 ;;  :config
 ;;  (company-keymap--unbind-quick-access company-active-map)
 ;;  (company-tng-configure-default)
-;;  (setq company-idle-delay 0.1
-  ;;	company-minimum-prefix-length 1))
 
 ;; Better looking completions
 ;;(use-package company-box
 ;;  :ensure t
 ;;  :hook (company-mode . company-box-mode))
 
-;;(use-package flycheck
-;;  :ensure t)
+(use-package flycheck
+  :ensure t)
+
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :config
+  (setq lsp-ui-doc-position 'bottom))
 
 (use-package rustic
   :ensure t
+  :hook (rustic-mode . lsp-deferred)
   :config
   (require 'lsp-rust)
   (setq lsp-rust-analyzer-completion-add-call-parenthesis t))
+
+;; Treemacs
+(use-package lsp-treemacs
+  :after lsp)
+(treemacs-project-follow-mode t)
+
+(use-package dirvish
+  :ensure t
+  :init
+;; Let dirvish take over dired globally
+  (dirvish-override-dired-mode))
+
+(use-package vterm
+  :ensure t)
