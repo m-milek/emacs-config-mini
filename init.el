@@ -127,7 +127,7 @@
  '(custom-safe-themes
    '("7a424478cb77a96af2c0f50cfb4e2a88647b3ccca225f8c650ed45b7f50d9525" "991ca4dbb23cab4f45c1463c187ac80de9e6a718edc8640003892a2523cb6259" "da75eceab6bea9298e04ce5b4b07349f8c02da305734f7c0c8c6af7b5eaa9738" "b99e334a4019a2caa71e1d6445fc346c6f074a05fcbb989800ecbe54474ae1b0" "636b135e4b7c86ac41375da39ade929e2bd6439de8901f53f88fde7dd5ac3561" "1a1ac598737d0fcdc4dfab3af3d6f46ab2d5048b8e72bc22f50271fd6d393a00" "251ed7ecd97af314cd77b07359a09da12dcd97be35e3ab761d4a92d8d8cf9a71" "4ff1c4d05adad3de88da16bd2e857f8374f26f9063b2d77d38d14686e3868d8d" default))
  '(package-selected-packages
-   '(gruvbox-theme all-the-icons-dired atom-one-dark-theme suscolors-theme subatomic-theme weyland-yutani-theme nano-theme yasnippet-snippets yasnippet vterm dirvish lsp-treemacs lsp-ui helpful company ivy-rich company-box lsp-mode flycheck rustic magit counsel-projectile projectile general dashboard which-key all-the-icons beacon good-scroll doom-themes use-package doom-modeline diminish counsel)))
+   '(rainbow-delimiters tree-sitter-langs tree-sitter gruvbox-theme all-the-icons-dired atom-one-dark-theme suscolors-theme subatomic-theme weyland-yutani-theme nano-theme yasnippet-snippets yasnippet vterm dirvish lsp-treemacs lsp-ui helpful company ivy-rich company-box lsp-mode flycheck rustic magit counsel-projectile projectile general dashboard which-key all-the-icons beacon good-scroll doom-themes use-package doom-modeline diminish counsel)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -179,7 +179,9 @@
 	      eshell-mode-hook
 	      treemacs-mode-hook
 	      shell-mode-hook
-	      vterm-mode-hook))
+	      vterm-mode-hook
+	      rustic-cargo-run-mode-hook
+	      rustic-cargo-test-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 ;; Light up the cursor whenever the window scrolls
@@ -306,6 +308,7 @@
 (use-package rustic
   :ensure t
   :hook (rustic-mode . lsp-deferred)
+  :hook (rustic-mode . tree-sitter-hl-mode)
   :config
   (require 'lsp-rust)
   (setq lsp-rust-analyzer-completion-add-call-parenthesis t))
@@ -337,5 +340,12 @@
            (lambda ()
              (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix))))
 
+(use-package tree-sitter
+  :ensure t)
+(use-package tree-sitter-langs
+    :ensure t)
+(global-tree-sitter-mode)
 
+(use-package rainbow-delimiters
+  :ensure t)
 
