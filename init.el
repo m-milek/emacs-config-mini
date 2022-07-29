@@ -61,7 +61,25 @@
   :config
   (ivy-mode 1))
 
-(global-set-key (kbd "C-s") 'swiper-isearch)
+(global-set-key (kbd "C-h") 'backward-char)
+(global-set-key (kbd "C-j") 'next-line)
+(global-set-key (kbd "C-k") 'previous-line)
+(global-set-key (kbd "C-l") 'forward-char)
+(global-set-key (kbd "C-M-h") 'left-word)
+(global-unset-key (kbd "C-M-j"))
+(global-set-key (kbd "C-M-j") nil)
+(global-set-key (kbd "C-M-j") (lambda () (interactive) (next-line 3)))
+(global-set-key (kbd "C-M-k") (lambda () (interactive) (previous-line 3)))
+(global-set-key (kbd "C-M-l") 'right-word)
+
+(global-set-key (kbd "C-c w") 'toggle-truncate-lines)
+
+(global-set-key (kbd "C-n") 'electric-newline-and-maybe-indent)
+(global-set-key (kbd "C-f") 'kill-line)
+(global-set-key (kbd "C-p") 'help-command)
+(global-set-key (kbd "C-b") 'recenter-top-bottom)
+(global-set-key (kbd "C-M-o") 'counsel-switch-buffer)
+
 (global-set-key (kbd "M-x") 'counsel-M-x)
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
 (global-set-key (kbd "M-y") 'counsel-yank-pop)
@@ -84,7 +102,7 @@
 (global-set-key (kbd "C-x l") 'counsel-locate)
 (global-set-key (kbd "C-c J") 'counsel-file-jump)
 (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
-(global-set-key (kbd "C-c w") 'counsel-wmctrl)
+;;(global-set-key (kbd "C-c w") 'counsel-wmctrl)
 (global-set-key (kbd "C-c C-r") 'ivy-resume)
 (global-set-key (kbd "C-c b") 'counsel-bookmark)
 (global-set-key (kbd "C-c d") 'counsel-descbinds)
@@ -127,7 +145,7 @@
  '(custom-safe-themes
    '("7a424478cb77a96af2c0f50cfb4e2a88647b3ccca225f8c650ed45b7f50d9525" "991ca4dbb23cab4f45c1463c187ac80de9e6a718edc8640003892a2523cb6259" "da75eceab6bea9298e04ce5b4b07349f8c02da305734f7c0c8c6af7b5eaa9738" "b99e334a4019a2caa71e1d6445fc346c6f074a05fcbb989800ecbe54474ae1b0" "636b135e4b7c86ac41375da39ade929e2bd6439de8901f53f88fde7dd5ac3561" "1a1ac598737d0fcdc4dfab3af3d6f46ab2d5048b8e72bc22f50271fd6d393a00" "251ed7ecd97af314cd77b07359a09da12dcd97be35e3ab761d4a92d8d8cf9a71" "4ff1c4d05adad3de88da16bd2e857f8374f26f9063b2d77d38d14686e3868d8d" default))
  '(package-selected-packages
-   '(rainbow-delimiters tree-sitter-langs tree-sitter gruvbox-theme all-the-icons-dired atom-one-dark-theme suscolors-theme subatomic-theme weyland-yutani-theme nano-theme yasnippet-snippets yasnippet vterm dirvish lsp-treemacs lsp-ui helpful company ivy-rich company-box lsp-mode flycheck rustic magit counsel-projectile projectile general dashboard which-key all-the-icons beacon good-scroll doom-themes use-package doom-modeline diminish counsel)))
+   '(typescript-mode flycheck-rust rainbow-delimiters tree-sitter-langs tree-sitter gruvbox-theme all-the-icons-dired atom-one-dark-theme suscolors-theme subatomic-theme weyland-yutani-theme nano-theme yasnippet-snippets yasnippet vterm dirvish lsp-treemacs lsp-ui helpful company ivy-rich company-box lsp-mode flycheck rustic magit counsel-projectile projectile general dashboard which-key all-the-icons beacon good-scroll doom-themes use-package doom-modeline diminish counsel)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -141,7 +159,7 @@
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-gruvbox t))
+  (load-theme 'doom-monokai-classic t))
 
   ;; Enable flashing mode-line on errors
   ;;(doom-themes-visual-bell-config)
@@ -185,8 +203,8 @@
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 ;; Light up the cursor whenever the window scrolls
-(use-package beacon)
-:
+(use-package beacon
+  :ensure t)
 (beacon-mode 1)
 
 (use-package which-key
@@ -202,7 +220,7 @@
     (setq dashboard-banner-logo-title "Happy Hacking")
     (setq dashboard-set-file-icons t)
     (setq dashboard-set-heading-icons t)
-    (setq dashboard-startup-banner 'official)
+    (setq dashboard-startup-banner "/home/michal/Pictures/tohru_upscaled.png")
     )
   :config
   (dashboard-setup-startup-hook))
@@ -225,8 +243,8 @@
   :config
   (general-evil-setup nil))
 
-(general-define-key
- "C-M-j" 'counsel-switch-buffer)
+;;(general-define-key
+;; "C-M-j" 'counsel-switch-buffer)
 
 (use-package projectile
   :diminish projectile-mode
@@ -313,6 +331,12 @@
   (require 'lsp-rust)
   (setq lsp-rust-analyzer-completion-add-call-parenthesis t))
 
+(use-package typescript-mode
+  :mode "\\.ts\\'"
+  :hook (typescript-mode . lsp-deferred)
+  :config
+  (setq typescript-indent-level 2))
+
 ;; Treemacs
 (use-package lsp-treemacs
   :after lsp)
@@ -349,3 +373,4 @@
 (use-package rainbow-delimiters
   :ensure t)
 
+(setq-default truncate-lines nil)
