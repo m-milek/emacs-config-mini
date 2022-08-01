@@ -21,7 +21,8 @@
 ;; initialize package sources
 (require 'package)
 
-(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+(setq package-archives '(
+			 ("melpa" . "https://melpa.org/packages/")
 			 ("melpa-stable" . "https://stable.melpa.org/packages/")
 			 ("org" . "https://orgmode.org/elpa/")
 			 ("elpa" . "https://elpa.gnu.org/packages/")))
@@ -62,6 +63,7 @@
   (ivy-mode 1))
 
 (global-set-key (kbd "C-h") 'backward-char)
+(global-unset-key (kbd "C-j"))
 (global-set-key (kbd "C-j") 'next-line)
 (global-set-key (kbd "C-k") 'previous-line)
 (global-set-key (kbd "C-l") 'forward-char)
@@ -145,7 +147,7 @@
  '(custom-safe-themes
    '("7a424478cb77a96af2c0f50cfb4e2a88647b3ccca225f8c650ed45b7f50d9525" "991ca4dbb23cab4f45c1463c187ac80de9e6a718edc8640003892a2523cb6259" "da75eceab6bea9298e04ce5b4b07349f8c02da305734f7c0c8c6af7b5eaa9738" "b99e334a4019a2caa71e1d6445fc346c6f074a05fcbb989800ecbe54474ae1b0" "636b135e4b7c86ac41375da39ade929e2bd6439de8901f53f88fde7dd5ac3561" "1a1ac598737d0fcdc4dfab3af3d6f46ab2d5048b8e72bc22f50271fd6d393a00" "251ed7ecd97af314cd77b07359a09da12dcd97be35e3ab761d4a92d8d8cf9a71" "4ff1c4d05adad3de88da16bd2e857f8374f26f9063b2d77d38d14686e3868d8d" default))
  '(package-selected-packages
-   '(typescript-mode flycheck-rust rainbow-delimiters tree-sitter-langs tree-sitter gruvbox-theme all-the-icons-dired atom-one-dark-theme suscolors-theme subatomic-theme weyland-yutani-theme nano-theme yasnippet-snippets yasnippet vterm dirvish lsp-treemacs lsp-ui helpful company ivy-rich company-box lsp-mode flycheck rustic magit counsel-projectile projectile general dashboard which-key all-the-icons beacon good-scroll doom-themes use-package doom-modeline diminish counsel)))
+   '(org-bullets auctex math-preview pdf-tools latex-math-preview typescript-mode flycheck-rust rainbow-delimiters tree-sitter-langs tree-sitter gruvbox-theme all-the-icons-dired atom-one-dark-theme suscolors-theme subatomic-theme weyland-yutani-theme nano-theme yasnippet-snippets yasnippet vterm dirvish lsp-treemacs lsp-ui helpful company ivy-rich company-box lsp-mode flycheck rustic magit counsel-projectile projectile general dashboard which-key all-the-icons beacon good-scroll doom-themes use-package doom-modeline diminish counsel)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -373,4 +375,50 @@
 (use-package rainbow-delimiters
   :ensure t)
 
-(setq-default truncate-lines nil)
+(setq-default truncate-lines t)
+
+(load-file "/home/michal/.emacs.d/my-latex-mode.el")
+(global-set-key (kbd "C-c C-. M-c") 'my-latex-compile)
+(global-set-key (kbd "C-c C-. M-v") 'my-latex-compile-and-view)
+
+(use-package tex
+  :ensure auctex)
+
+(defun my-org-mode-setup ()
+  (setq org-startup-indented t)
+  (org-indent-mode)
+  (variable-pitch-mode -1) ;;enable a non-monospace font
+  (auto-fill-mode 0)
+  (visual-line-mode 1))
+
+(use-package org
+  :ensure t
+  :hook (org-mode . my-org-mode-setup)
+  :config
+  (setq org-ellipsis " ⏷"
+	org-hide-emphasis-markers nil))
+
+(define-key org-mode-map (kbd "C-j") nil)
+
+(use-package org-bullets
+  :after org
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+(font-lock-add-keywords 'org-mode
+			'(("^ *\\([-]\\) "
+			   (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "○"))))))
+
+(dolist (face '((org-level-1 . 1.25)
+		(org-level-2 . 1.15)
+		(org-level-3 . 1.05)
+		(org-level-4 . 1.0)
+		(org-level-5 . 1.1)
+		(org-level-6 . 1.1)
+		(org-level-7 . 1.1)
+		(org-level-8 . 1.1)))
+  (set-face-attribute (car face) nil
+		      :font "Source Code Pro"
+		      :weight 'regular
+		      :height (cdr face)))
