@@ -160,7 +160,7 @@
   :config
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+	doom-themes-enable-italic t) ; if nil, italics is universally disabled
   (load-theme 'doom-monokai-classic t))
 
   ;; Enable flashing mode-line on errors
@@ -180,8 +180,8 @@
 (electric-pair-mode 1)
 (setq electric-pair-pairs
       '(
-        (?\" . ?\")
-        (?\{ . ?\})))
+	(?\" . ?\")
+	(?\{ . ?\})))
 
 ;; Enable smooth scrolling since Emacs 29 is not released yet
 ;;(use-package good-scroll)
@@ -228,10 +228,10 @@
   (dashboard-setup-startup-hook))
 (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
 (setq dashboard-items '((recents  . 3)
-                        (projects . 3)
-                        ;;(agenda . 5)
-                        ;;(bookmarks . 5)
-                        ))
+			(projects . 3)
+			;;(agenda . 5)
+			;;(bookmarks . 5)
+			))
 
 (use-package ivy-rich
   :ensure t
@@ -303,7 +303,7 @@
   :hook (lsp-mode . company-mode)
   :bind (:map company-active-map
 	      ("<tab>" . company-complete-selection))
-        (:map lsp-mode-map
+	(:map lsp-mode-map
 	      ("<tab>" . company-indent-or-complete-common))
   :custom
   (company-minimum-prefix-length 1)
@@ -362,12 +362,13 @@
 
 ;; Fix broken prompt and completion prompts while running fish shell
 (add-hook 'term-exec-hook
-          (function
-           (lambda ()
-             (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix))))
+	  (function
+	   (lambda ()
+	     (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix))))
 
 (use-package tree-sitter
   :ensure t)
+
 (use-package tree-sitter-langs
     :ensure t)
 (global-tree-sitter-mode)
@@ -398,19 +399,18 @@
   (setq org-ellipsis " ⏷"
 	org-hide-emphasis-markers nil))
 
-(define-key org-mode-map (kbd "C-j") nil)
-
 (use-package org-bullets
+  :ensure t
   :after org
   :hook (org-mode . org-bullets-mode)
   :custom
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
-(font-lock-add-keywords 'org-mode
-			'(("^ *\\([-]\\) "
-			   (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "○"))))))
+;;(font-lock-add-keywords 'org-mode
+;;			'(("^ *\\([-]\\) "
+;;			   (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "●"))))))
 
-(dolist (face '((org-level-1 . 1.25)
+(with-eval-after-load 'org-faces (dolist (face '((org-level-1 . 1.25)
 		(org-level-2 . 1.15)
 		(org-level-3 . 1.05)
 		(org-level-4 . 1.0)
@@ -421,4 +421,38 @@
   (set-face-attribute (car face) nil
 		      :font "Source Code Pro"
 		      :weight 'regular
-		      :height (cdr face)))
+		      :height (cdr face))))
+
+(defun my-org-mode-visual-fill ()
+  (setq visual-fill-column-width 100
+	visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
+
+(use-package visual-fill-column
+  :ensure t
+  :hook (org-mode . my-org-mode-visual-fill))
+
+(define-key org-mode-map (kbd "C-j") nil)
+
+(use-package undo-tree
+  :ensure t)
+
+(global-undo-tree-mode)
+
+(use-package goto-line-preview
+  :ensure t)
+
+(delete-selection-mode 1)
+
+(use-package org-download
+  :ensure t)
+
+(use-package move-dup
+  :ensure t)
+(global-set-key (kbd "M-<up>") 'move-dup-move-lines-up)
+(global-set-key (kbd "M-<down>") 'move-dup-move-lines-down)
+(global-set-key (kbd "C-M-<up>") 'move-dup-duplicate-up)
+(global-set-key (kbd "C-M-<down>") 'move-dup-duplicate-down)
+
+
+(message "Loaded init.el")
