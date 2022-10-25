@@ -22,7 +22,7 @@
 (require 'package)
 
 (setq package-archives '(
-			 ("melpa" . "https://melpa.org/packages/")
+			 ;;("melpa" . "https://melpa.org/packages/")
 			 ("melpa-stable" . "https://stable.melpa.org/packages/")
 			 ("org" . "https://orgmode.org/elpa/")
 			 ("elpa" . "https://elpa.gnu.org/packages/")))
@@ -73,6 +73,8 @@
 (global-set-key (kbd "C-M-j") (lambda () (interactive) (next-line 3)))
 (global-set-key (kbd "C-M-k") (lambda () (interactive) (previous-line 3)))
 (global-set-key (kbd "C-M-l") 'right-word)
+(global-set-key (kbd "C-m") 'back-to-indentation)
+(global-set-key (kbd "RET") 'newline)
 
 (global-set-key (kbd "C-c w") 'toggle-truncate-lines)
 
@@ -136,8 +138,16 @@
 (setq doom-modeline-indent-info t)
 (use-package all-the-icons
   :ensure t)
+
+(use-package dired
+  :ensure nil
+  :custom ((dired-listing-switches "-agho --group-directories-first")))
+
 (use-package all-the-icons-dired
-  :ensure t)
+  :ensure t
+  :hook (dired-mode
+	 . all-the-icons-dired-mode))
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -147,7 +157,7 @@
  '(custom-safe-themes
    '("7a424478cb77a96af2c0f50cfb4e2a88647b3ccca225f8c650ed45b7f50d9525" "991ca4dbb23cab4f45c1463c187ac80de9e6a718edc8640003892a2523cb6259" "da75eceab6bea9298e04ce5b4b07349f8c02da305734f7c0c8c6af7b5eaa9738" "b99e334a4019a2caa71e1d6445fc346c6f074a05fcbb989800ecbe54474ae1b0" "636b135e4b7c86ac41375da39ade929e2bd6439de8901f53f88fde7dd5ac3561" "1a1ac598737d0fcdc4dfab3af3d6f46ab2d5048b8e72bc22f50271fd6d393a00" "251ed7ecd97af314cd77b07359a09da12dcd97be35e3ab761d4a92d8d8cf9a71" "4ff1c4d05adad3de88da16bd2e857f8374f26f9063b2d77d38d14686e3868d8d" default))
  '(package-selected-packages
-   '(org-bullets auctex math-preview pdf-tools latex-math-preview typescript-mode flycheck-rust rainbow-delimiters tree-sitter-langs tree-sitter gruvbox-theme all-the-icons-dired atom-one-dark-theme suscolors-theme subatomic-theme weyland-yutani-theme nano-theme yasnippet-snippets yasnippet vterm dirvish lsp-treemacs lsp-ui helpful company ivy-rich company-box lsp-mode flycheck rustic magit counsel-projectile projectile general dashboard which-key all-the-icons beacon good-scroll doom-themes use-package doom-modeline diminish counsel)))
+   '(xkcd lsp-java dired-single yafolding org-bullets auctex math-preview pdf-tools latex-math-preview typescript-mode flycheck-rust rainbow-delimiters tree-sitter-langs tree-sitter gruvbox-theme all-the-icons-dired atom-one-dark-theme suscolors-theme subatomic-theme weyland-yutani-theme nano-theme yasnippet-snippets yasnippet vterm dirvish lsp-treemacs lsp-ui helpful company ivy-rich company-box lsp-mode flycheck rustic magit counsel-projectile projectile general dashboard which-key all-the-icons beacon good-scroll doom-themes use-package doom-modeline diminish counsel)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -161,7 +171,7 @@
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
 	doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-monokai-classic t))
+  (load-theme 'doom-dracula t))
 
   ;; Enable flashing mode-line on errors
   ;;(doom-themes-visual-bell-config)
@@ -219,19 +229,18 @@
   :init
   (progn
     (setq dashboard-center-content t)
-    (setq dashboard-banner-logo-title "Happy Hacking")
+    (setq dashboard-banner-logo-title "There is no system but GNU, and Linux is one of its kernels.")
     (setq dashboard-set-file-icons t)
     (setq dashboard-set-heading-icons t)
-    (setq dashboard-startup-banner "/home/michal/Pictures/tohru_upscaled.png")
-    )
+    (setq dashboard-startup-banner (shell-command-to-string "/home/michal/.emacs.d/dashboard-pictures/random_image.sh")))
   :config
-  (dashboard-setup-startup-hook))
+  (dashboard-setup-startup-hook)
 (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
 (setq dashboard-items '((recents  . 3)
 			(projects . 3)
 			;;(agenda . 5)
 			;;(bookmarks . 5)
-			))
+			)))
 
 (use-package ivy-rich
   :ensure t
@@ -273,14 +282,9 @@
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
-(defun efs/lsp-mode-setup ()
-  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-  (lsp-headerline-breadcrumb-mode))
-
 (use-package lsp-mode
   :ensure t
   :commands (lsp lsp-deferred)
-  :hook (lsp-mode lsp-deferred)
   :init
   (setq lsp-keymap-prefix "C-c l")
   :config
@@ -289,10 +293,10 @@
 ;; Default value is causing a slowdown, it's too low to handle server responses.
 (setq read-process-output-max (*(* 1024 1024) 3)) ;; 3mb
 
-(defun efs/lsp-mode-setup ()
-  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-  (lsp-headerline-breadcrumb-mode))
-(setq lsp-headerline-breadcrumb-enable nil)
+;;(defun efs/lsp-mode-setup ()
+;;  (lsp-headerline-breadcrumb-mode))
+(setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+(setq lsp-headerline-breadcrumb-enable t)
 
 (add-hook 'lsp-mode-hook #'yas-minor-mode-on)
 
@@ -308,14 +312,17 @@
   :custom
   (company-minimum-prefix-length 1)
   (company-idle-delay 0.0))
+(setq company-tooltip-maximum-width 60)
+(setq company-tooltip-margin 3)
 ;;  :config
 ;;  (company-keymap--unbind-quick-access company-active-map)
 ;;  (company-tng-configure-default)
 
 ;; Better looking completions
-;;(use-package company-box
-;;  :ensure t
-;;  :hook (company-mode . company-box-mode))
+(use-package company-box
+  :ensure t
+  :hook (company-mode . company-box-mode))
+(setq company-box-doc-enable nil)
 
 (use-package flycheck
   :ensure t)
@@ -323,6 +330,7 @@
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
   :config
+  (setq lsp-ui-doc-enable t)
   (setq lsp-ui-doc-position 'bottom))
 
 (use-package rustic
@@ -335,9 +343,25 @@
 
 (use-package typescript-mode
   :mode "\\.ts\\'"
+  :mode "\\.js\\'"
   :hook (typescript-mode . lsp-deferred)
+  :hook (typescript-mode . tree-sitter-hl-mode)
   :config
-  (setq typescript-indent-level 2))
+  (setq typescript-indent-level 2)
+  (setq js-indent-level 2))
+
+(add-hook 'c-mode-hook 'lsp)
+(add-hook 'c-mode-hook 'tree-sitter-hl-mode)
+(setq-default c-basic-offset 4)
+(add-hook 'c++-mode-hook 'lsp)
+(add-hook 'js-mode-hook 'lsp)
+
+(add-hook 'lsp 'tree-sitter-hl-mode)
+
+(use-package lsp-java
+  :ensure t)
+(add-hook 'java-mode-hook 'tree-sitter-hl-mode)
+(add-hook 'java-mode-hook 'lsp)
 
 ;; Treemacs
 (use-package lsp-treemacs
@@ -354,17 +378,22 @@
 (use-package yasnippet
   :ensure t
   :config
+  (yas-global-mode)
   (use-package yasnippet-snippets
     :ensure t)
   (yas-reload-all))
+(yas-minor-mode-on)
+
+(with-eval-after-load 'lsp-mode
+  (yas-global-mode))
 
 (shell-command "/usr/bin/xmodmap /home/michal/.Xmodmap")
 
 ;; Fix broken prompt and completion prompts while running fish shell
-(add-hook 'term-exec-hook
+(with-eval-after-load 'vterm(add-hook 'term-exec-hook
 	  (function
 	   (lambda ()
-	     (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix))))
+	     (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix)))))
 
 (use-package tree-sitter
   :ensure t)
@@ -381,6 +410,8 @@
 (load-file "/home/michal/.emacs.d/my-latex-mode.el")
 (global-set-key (kbd "C-c C-. M-c") 'my-latex-compile)
 (global-set-key (kbd "C-c C-. M-v") 'my-latex-compile-and-view)
+(add-hook 'LaTeX-mode-hook
+          (lambda () (local-unset-key (kbd "C-j"))))
 
 (use-package tex
   :ensure auctex)
@@ -432,20 +463,19 @@
   :ensure t
   :hook (org-mode . my-org-mode-visual-fill))
 
-(define-key org-mode-map (kbd "C-j") nil)
-
-(use-package undo-tree
+(use-package org-download
   :ensure t)
 
-(global-undo-tree-mode)
+(add-hook 'org-mode-hook
+          (lambda () (local-set-key (kbd "C-j") nil)))
+
+(with-eval-after-load 'org-mode-map (define-key org-mode-map (kbd "C-j") nil))
 
 (use-package goto-line-preview
   :ensure t)
+(global-set-key (kbd "C-t") 'goto-line-preview)
 
 (delete-selection-mode 1)
-
-(use-package org-download
-  :ensure t)
 
 (use-package move-dup
   :ensure t)
@@ -454,5 +484,7 @@
 (global-set-key (kbd "C-M-<up>") 'move-dup-duplicate-up)
 (global-set-key (kbd "C-M-<down>") 'move-dup-duplicate-down)
 
+(use-package dired-single
+  :ensure t)
 
 (message "Loaded init.el")
