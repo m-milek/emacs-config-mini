@@ -1,16 +1,18 @@
+(load-file "/home/michal/.emacs.d/my-latex-mode.el")
+(load-file "/home/michal/.emacs.d/my-elisp/random-dashboard-image.el")
+
 (setq inhibit-startup-message t)
-
-(scroll-bar-mode -1) ;; visual scrollbar
-(tool-bar-mode -1) ;; disable toolbar
-(tooltip-mode -1) ;; disable tooltips
-(set-fringe-mode 0) ;; space
-
-(menu-bar-mode -1) ;; disable menu bar
-
-;; set up visible bell
+(scroll-bar-mode 0);
+;visual scrollbar
+(tool-bar-mode 0)
+(tooltip-mode 0);
+(set-fringe-mode 0);
+(menu-bar-mode 0)
+; set up visible bell
 (setq visible-bell nil)
 (global-visual-line-mode -1)
 
+;;(set-face-attribute 'default nil :font "CozetteVector" :height 150)
 (set-face-attribute 'default nil :font "Source Code Pro" :height 140)
 
 ;;(load-theme 'wombat)
@@ -22,7 +24,7 @@
 (require 'package)
 
 (setq package-archives '(
-			 ;;("melpa" . "https://melpa.org/packages/")
+			 ("melpa" . "https://melpa.org/packages/")
 			 ("melpa-stable" . "https://stable.melpa.org/packages/")
 			 ("org" . "https://orgmode.org/elpa/")
 			 ("elpa" . "https://elpa.gnu.org/packages/")))
@@ -70,8 +72,8 @@
 (global-set-key (kbd "C-M-h") 'left-word)
 (global-unset-key (kbd "C-M-j"))
 (global-set-key (kbd "C-M-j") nil)
-(global-set-key (kbd "C-M-j") (lambda () (interactive) (next-line 3)))
-(global-set-key (kbd "C-M-k") (lambda () (interactive) (previous-line 3)))
+(global-set-key (kbd "C-M-j") (lambda () (interactive) (next-line 4)))
+(global-set-key (kbd "C-M-k") (lambda () (interactive) (previous-line 4)))
 (global-set-key (kbd "C-M-l") 'right-word)
 (global-set-key (kbd "C-m") 'back-to-indentation)
 (global-set-key (kbd "RET") 'newline)
@@ -157,7 +159,7 @@
  '(custom-safe-themes
    '("7a424478cb77a96af2c0f50cfb4e2a88647b3ccca225f8c650ed45b7f50d9525" "991ca4dbb23cab4f45c1463c187ac80de9e6a718edc8640003892a2523cb6259" "da75eceab6bea9298e04ce5b4b07349f8c02da305734f7c0c8c6af7b5eaa9738" "b99e334a4019a2caa71e1d6445fc346c6f074a05fcbb989800ecbe54474ae1b0" "636b135e4b7c86ac41375da39ade929e2bd6439de8901f53f88fde7dd5ac3561" "1a1ac598737d0fcdc4dfab3af3d6f46ab2d5048b8e72bc22f50271fd6d393a00" "251ed7ecd97af314cd77b07359a09da12dcd97be35e3ab761d4a92d8d8cf9a71" "4ff1c4d05adad3de88da16bd2e857f8374f26f9063b2d77d38d14686e3868d8d" default))
  '(package-selected-packages
-   '(xkcd lsp-java dired-single yafolding org-bullets auctex math-preview pdf-tools latex-math-preview typescript-mode flycheck-rust rainbow-delimiters tree-sitter-langs tree-sitter gruvbox-theme all-the-icons-dired atom-one-dark-theme suscolors-theme subatomic-theme weyland-yutani-theme nano-theme yasnippet-snippets yasnippet vterm dirvish lsp-treemacs lsp-ui helpful company ivy-rich company-box lsp-mode flycheck rustic magit counsel-projectile projectile general dashboard which-key all-the-icons beacon good-scroll doom-themes use-package doom-modeline diminish counsel)))
+   '(multiple-cursors fontaine clang-format mu4e utop merlin tuareg xkcd lsp-java dired-single yafolding org-bullets auctex math-preview pdf-tools latex-math-preview typescript-mode flycheck-rust rainbow-delimiters tree-sitter-langs tree-sitter gruvbox-theme all-the-icons-dired atom-one-dark-theme suscolors-theme subatomic-theme weyland-yutani-theme nano-theme yasnippet-snippets yasnippet vterm dirvish lsp-treemacs lsp-ui helpful company ivy-rich company-box lsp-mode flycheck rustic magit counsel-projectile projectile general dashboard which-key all-the-icons beacon good-scroll doom-themes use-package doom-modeline diminish counsel)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -171,7 +173,7 @@
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
 	doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-dracula t))
+  (load-theme 'doom-monokai-machine t))
 
   ;; Enable flashing mode-line on errors
   ;;(doom-themes-visual-bell-config)
@@ -232,12 +234,12 @@
     (setq dashboard-banner-logo-title "There is no system but GNU, and Linux is one of its kernels.")
     (setq dashboard-set-file-icons t)
     (setq dashboard-set-heading-icons t)
-    (setq dashboard-startup-banner (shell-command-to-string "/home/michal/.emacs.d/dashboard-pictures/random_image.sh")))
+    (setq dashboard-startup-banner (random-dashboard-image-path)))
   :config
   (dashboard-setup-startup-hook)
 (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
 (setq dashboard-items '((recents  . 3)
-			(projects . 3)
+			;;(projects . 3)
 			;;(agenda . 5)
 			;;(bookmarks . 5)
 			)))
@@ -296,7 +298,7 @@
 ;;(defun efs/lsp-mode-setup ()
 ;;  (lsp-headerline-breadcrumb-mode))
 (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-(setq lsp-headerline-breadcrumb-enable t)
+(setq lsp-headerline-breadcrumb-enable nil)
 
 (add-hook 'lsp-mode-hook #'yas-minor-mode-on)
 
@@ -353,13 +355,19 @@
 (add-hook 'c-mode-hook 'lsp)
 (add-hook 'c-mode-hook 'tree-sitter-hl-mode)
 (setq-default c-basic-offset 4)
-(add-hook 'c++-mode-hook 'lsp)
 (add-hook 'js-mode-hook 'lsp)
+
+(add-hook 'c++-mode-hook 'lsp)
+(add-hook 'tex-mode-hook 'lsp)
+(add-hook 'c++-mode-hook 'tree-sitter-hl-mode)
+(setq-default c++-basic-offset 4)
+(defun cc-mode-my-rebind-formatting ()
+  (define-key lsp-mode-map (kbd "C-c l = =") 'clang-format-buffer))
+(add-hook 'c++-mode-hook 'cc-mode-my-rebind-formatting)
 
 (add-hook 'lsp 'tree-sitter-hl-mode)
 
-(use-package lsp-java
-  :ensure t)
+(use-package lsp-java)
 (add-hook 'java-mode-hook 'tree-sitter-hl-mode)
 (add-hook 'java-mode-hook 'lsp)
 
@@ -407,11 +415,12 @@
 
 (setq-default truncate-lines t)
 
-(load-file "/home/michal/.emacs.d/my-latex-mode.el")
-(global-set-key (kbd "C-c C-. M-c") 'my-latex-compile)
-(global-set-key (kbd "C-c C-. M-v") 'my-latex-compile-and-view)
 (add-hook 'LaTeX-mode-hook
+          (local-set-key (kbd "C-c C-. M-c") 'my-latex-compile)
+          (local-set-key (kbd "C-c C-. M-v") 'my-latex-compile-and-view)
           (lambda () (local-unset-key (kbd "C-j"))))
+(setq TeX-auto-save t)
+(setq TeX-parse-self t) 
 
 (use-package tex
   :ensure auctex)
@@ -450,7 +459,7 @@
 		(org-level-7 . 1.1)
 		(org-level-8 . 1.1)))
   (set-face-attribute (car face) nil
-		      :font "Source Code Pro"
+		      :font "CozetteVector"
 		      :weight 'regular
 		      :height (cdr face))))
 
@@ -463,8 +472,7 @@
   :ensure t
   :hook (org-mode . my-org-mode-visual-fill))
 
-(use-package org-download
-  :ensure t)
+(use-package org-download)
 
 (add-hook 'org-mode-hook
           (lambda () (local-set-key (kbd "C-j") nil)))
@@ -487,4 +495,41 @@
 (use-package dired-single
   :ensure t)
 
-(message "Loaded init.el")
+(setq-default c-basic-offset 4)
+
+;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
+;;(require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
+;; ## end of OPAM user-setup addition for emacs / base ## keep this line
+
+;;(message "Loaded init.el")
+
+(yafolding-mode 1)
+
+(setq-default indent-tabs-mode nil)
+
+(defun fix-file-indent ()
+  (interactive)
+  (goto-char (point-min))
+  (while (not (save-excursion (end-of-line) (eobp)))
+    (move-beginning-of-line nil)
+    (company-indent-or-complete-common t)
+    (forward-line 1)))
+
+(setq subword-mode 1)
+
+(use-package clang-format
+  :ensure t)
+(setq-default clang-format-fallback-style "WebKit")
+
+;;(setq display-line-numbers-mode t)
+(setf dired-kill-when-opening-new-dired-buffer t)
+
+;;(load-file "/home/michal/.emacs.d/oracc-init.el")
+(use-package pdf-tools
+  :ensure t)
+
+(require 'multiple-cursors)
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C-.") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-,") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-,") 'mc/mark-all-like-this)
