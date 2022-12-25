@@ -1,8 +1,9 @@
 (setq file-list
       (list
-;;       "tohru_upscaled.png"
-;;       "tohru_upscaled_emacs_logo.png"
+       "tohru_upscaled_emacs_logo.png"
+       "flute-gnu.png"
        "bunny-girl.png"
+       "kaguya-emacs-scaled.png"
        ))
 
 (defun random-dashboard-image-path ()
