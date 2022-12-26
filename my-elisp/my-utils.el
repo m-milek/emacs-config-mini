@@ -3,10 +3,16 @@
   (dolist (cur (buffer-list))
     (kill-buffer cur)))
 
-(defun fix-file-indent ()
+(defun my-fix-file-indent ()
   (interactive)
   (goto-char (point-min))
   (while (not (save-excursion (end-of-line) (eobp)))
     (move-beginning-of-line nil)
     (company-indent-or-complete-common t)
     (forward-line 1)))
+
+(defun my-match-lsp-formatting ()
+  (interactive)
+  (if (or (eq major-mode 'c-mode) (eq major-mode 'c++-mode))
+      (clang-format-buffer)
+    (lsp-format-buffer)))

@@ -1,5 +1,5 @@
-(load-file "/home/michal/.emacs.d/my-latex-mode.el")
-(load-file "/home/michal/.emacs.d/my-elisp/random-dashboard-image.el")
+(load-file "/home/michal/.emacs.d/my-elisp/my-latex-mode.el")
+(load-file "/home/michal/.emacs.d/my-elisp/my-random-dashboard-image.el")
 (load-file "/home/michal/.emacs.d/my-elisp/my-windows.el")
 (load-file "/home/michal/.emacs.d/my-elisp/my-utils.el")
 
@@ -131,6 +131,10 @@
 (global-set-key (kbd "C-c C-,") 'mc/mark-all-like-this)
 
 (global-set-key (kbd "M-RET") 'my-split-window-horizontally-and-focus-vterm)
+(global-set-key (kbd "C-x 2") 'my-split-window-vertically-and-focus)
+(global-set-key (kbd "C-x 3") 'my-split-window-horizontally-and-focus)
+
+(define-key emacs-lisp-mode-map (kbd "C-x M-e") 'eval-buffer)
 
 (define-key emacs-lisp-mode-map (kbd "C-x M-e") 'eval-buffer)
 
@@ -208,6 +212,9 @@
 (use-package move-dup
   :ensure t)
 
+(use-package goto-line-preview
+  :ensure t)
+
 (use-package vterm
   :ensure t
   :commands vterm
@@ -239,9 +246,6 @@
 (setq doom-modeline-mu4e t)
 (setq doom-modeline--battery-status t)
 (setq doom-modeline-time-icon t)
-
-(use-package all-the-icons
-  :ensure t)
 
 (use-package dired
   :ensure nil
@@ -333,7 +337,6 @@
 
 (setq-default indent-tabs-mode nil)
 
-;; Dashboard settings
 (use-package dashboard
   :ensure t
   :init
@@ -342,14 +345,15 @@
     (setq dashboard-banner-logo-title "There is no system but GNU, and Linux is one of its kernels.")
     (setq dashboard-set-file-icons t)
     (setq dashboard-set-heading-icons t)
-    (setq dashboard-startup-banner (random-dashboard-image-path)))
+    (setq dashboard-set-footer nil)
+    (setq dashboard-startup-banner (my-random-dashboard-image-path)))
   :config
   (dashboard-setup-startup-hook)
 (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
-(setq dashboard-items '((recents  . 3)
+(setq dashboard-items '((recents  . 4)
                         ;;(projects . 3)
                         ;;(agenda . 5)
-                        ;;(bookmarks . 5)
+                        (bookmarks . 1)
                         )))
 
 (use-package lsp-mode
@@ -360,6 +364,7 @@
   :config
   (lsp-enable-which-key-integration t))
 
+
 ;; Increase the amount of data which Emacs reads from the process.
 ;; Default value is causing a slowdown, it's too low to handle server responses.
 (setq read-process-output-max (*(* 1024 1024) 3)) ;; 3mb
@@ -369,6 +374,8 @@
 
 (add-hook 'lsp-mode-hook #'yas-minor-mode-on)
 (add-hook 'lsp-mode-hook #'tree-sitter-hl-mode)
+(with-eval-after-load 'lsp-mode
+    (define-key lsp-mode-map (kbd "C-c l = =") 'my-match-lsp-formatting))
 
 ;; Better completions
 (use-package company
@@ -404,9 +411,6 @@
 (with-eval-after-load 'lsp-mode
   (yas-global-mode))
 
-(use-package goto-line-preview
-  :ensure t)
-
 (use-package rustic
   :ensure t
   :hook (rustic-mode . lsp-deferred)
@@ -427,13 +431,10 @@
 (add-hook 'c-mode-hook 'lsp)
 (add-hook 'c-mode-hook 'tree-sitter-hl-mode)
 (setq-default c-basic-offset 4)
-(add-hook 'c++-mode-hook 'lsp)
+(add-hook 'c++-mode-hook 'rebind)
 (add-hook 'c++-mode-hook 'tree-sitter-hl-mode)
+(add-hook 'c++-mode-hook 'lsp)
 (setq-default c++-basic-offset 4)
-
-(defun cc-mode-my-rebind-formatting ()
-  (local-set-key (kbd "C-c l = =") 'clang-format-buffer))
-(add-hook 'c++-mode-hook 'cc-mode-my-rebind-formatting)
 
 (use-package clang-format
   :ensure t)
@@ -455,6 +456,8 @@
 ;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
 ;;(require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
 ;; ## end of OPAM user-setup addition for emacs / base ## keep this line
+
+(add-hook 'emacs-lisp-mode-hook 'company-mode)
 
 (defun my-org-mode-setup ()
   (setq org-startup-indented t)

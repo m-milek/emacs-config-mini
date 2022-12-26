@@ -6,12 +6,12 @@ This GNU Emacs configuration was mainly written according to guidance from David
 his [[https://www.youtube.com/watch?v=74zOY-vgkyw&list=PLEoMzSkcN8oPH1au7H6B7bBJ4ZO7BXjSZ&index=1][Emacs From Scratch]] YouTube series.
 * My Elisp
 These files are elisp code that I've written myself.
-- **my-latex-mode.el**: Code regarding editing LaTeX documents.
+- *my-latex-mode.el*: Code regarding editing LaTeX documents.
 - *random-dashboard-image.el*: Code for choosing a random image for the dashboard visible after startup.
-- **my-windows.el** - Code customizing window management.
+- *my-windows.el* - Code customizing window management.
 #+BEGIN_SRC elisp
-  (load-file "/home/michal/.emacs.d/my-latex-mode.el")
-  (load-file "/home/michal/.emacs.d/my-elisp/random-dashboard-image.el")
+  (load-file "/home/michal/.emacs.d/my-elisp/my-latex-mode.el")
+  (load-file "/home/michal/.emacs.d/my-elisp/my-random-dashboard-image.el")
   (load-file "/home/michal/.emacs.d/my-elisp/my-windows.el")
   (load-file "/home/michal/.emacs.d/my-elisp/my-utils.el")
 #+END_SRC
@@ -95,73 +95,77 @@ My configuration uses src_elisp{use-package} as its package management utility.
 * Keybindings
 ** Global
 #+BEGIN_SRC elisp
-  (global-set-key (kbd "C-h") 'backward-char)
-  (global-unset-key (kbd "C-j"))
-  (global-set-key (kbd "C-j") 'next-line)
-  (global-set-key (kbd "C-k") 'previous-line)
-  (global-set-key (kbd "C-l") 'forward-char)
-  (global-set-key (kbd "C-M-h") 'left-word)
-  (global-unset-key (kbd "C-M-j"))
-  (global-set-key (kbd "C-M-j") nil)
-  (global-set-key (kbd "C-M-j") (lambda () (interactive) (next-line 4)))
-  (global-set-key (kbd "C-M-k") (lambda () (interactive) (previous-line 4)))
-  (global-set-key (kbd "C-M-l") 'right-word)
-  (global-set-key (kbd "C-m") 'back-to-indentation)
-  (global-set-key (kbd "RET") 'newline)
+(global-set-key (kbd "C-h") 'backward-char)
+(global-unset-key (kbd "C-j"))
+(global-set-key (kbd "C-j") 'next-line)
+(global-set-key (kbd "C-k") 'previous-line)
+(global-set-key (kbd "C-l") 'forward-char)
+(global-set-key (kbd "C-M-h") 'left-word)
+(global-unset-key (kbd "C-M-j"))
+(global-set-key (kbd "C-M-j") nil)
+(global-set-key (kbd "C-M-j") (lambda () (interactive) (next-line 4)))
+(global-set-key (kbd "C-M-k") (lambda () (interactive) (previous-line 4)))
+(global-set-key (kbd "C-M-l") 'right-word)
+(global-set-key (kbd "C-m") 'back-to-indentation)
+(global-set-key (kbd "RET") 'newline)
 
-  (global-set-key (kbd "C-c w") 'toggle-truncate-lines)
+(global-set-key (kbd "C-c w") 'toggle-truncate-lines)
 
-  (global-set-key (kbd "C-n") 'electric-newline-and-maybe-indent)
-  (global-set-key (kbd "C-f") 'kill-line)
-  (global-set-key (kbd "C-p") 'help-command)
-  (global-set-key (kbd "C-b") 'recenter-top-bottom)
-  (global-set-key (kbd "C-M-o") 'counsel-switch-buffer)
+(global-set-key (kbd "C-n") 'electric-newline-and-maybe-indent)
+(global-set-key (kbd "C-f") 'kill-line)
+(global-set-key (kbd "C-p") 'help-command)
+(global-set-key (kbd "C-b") 'recenter-top-bottom)
+(global-set-key (kbd "C-M-o") 'counsel-switch-buffer)
 
-  (global-set-key (kbd "M-x") 'counsel-M-x)
-  (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-  (global-set-key (kbd "M-y") 'counsel-yank-pop)
-  (global-set-key (kbd "<f1> f") 'counsel-describe-function)
-  (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-  (global-set-key (kbd "<f1> l") 'counsel-find-library)
-  (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-  (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-  (global-set-key (kbd "<f2> j") 'counsel-set-variable)
-  (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
-  (global-set-key (kbd "C-c v") 'ivy-push-view)
-  (global-set-key (kbd "C-c V") 'ivy-pop-view)
-  (global-set-key (kbd "C-c c") 'counsel-compile)
-  (global-set-key (kbd "C-c g") 'counsel-git)
-  (global-set-key (kbd "C-c j") 'counsel-git-grep)
-  (global-set-key (kbd "C-c L") 'counsel-git-log)
-  (global-set-key (kbd "C-c k") 'counsel-rg)
-  (global-set-key (kbd "C-c m") 'counsel-linux-app)
-  (global-set-key (kbd "C-c n") 'counsel-fzf)
-  (global-set-key (kbd "C-x l") 'counsel-locate)
-  (global-set-key (kbd "C-c J") 'counsel-file-jump)
-  (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
-  (global-set-key (kbd "C-c C-r") 'ivy-resume)
-  (global-set-key (kbd "C-c b") 'counsel-bookmark)
-  (global-set-key (kbd "C-c d") 'counsel-descbinds)
-  (global-set-key (kbd "C-c g") 'counsel-git)
-  (global-set-key (kbd "C-c o") 'counsel-outline)
-  (global-set-key (kbd "C-c t") 'counsel-load-theme)
-  (global-set-key (kbd "C-c F") 'counsel-org-file)
+(global-set-key (kbd "M-x") 'counsel-M-x)
+(global-set-key (kbd "C-x C-f") 'counsel-find-file)
+(global-set-key (kbd "M-y") 'counsel-yank-pop)
+(global-set-key (kbd "<f1> f") 'counsel-describe-function)
+(global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+(global-set-key (kbd "<f1> l") 'counsel-find-library)
+(global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+(global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+(global-set-key (kbd "<f2> j") 'counsel-set-variable)
+(global-set-key (kbd "C-x b") 'ivy-switch-buffer)
+(global-set-key (kbd "C-c v") 'ivy-push-view)
+(global-set-key (kbd "C-c V") 'ivy-pop-view)
+(global-set-key (kbd "C-c c") 'counsel-compile)
+(global-set-key (kbd "C-c g") 'counsel-git)
+(global-set-key (kbd "C-c j") 'counsel-git-grep)
+(global-set-key (kbd "C-c L") 'counsel-git-log)
+(global-set-key (kbd "C-c k") 'counsel-rg)
+(global-set-key (kbd "C-c m") 'counsel-linux-app)
+(global-set-key (kbd "C-c n") 'counsel-fzf)
+(global-set-key (kbd "C-x l") 'counsel-locate)
+(global-set-key (kbd "C-c J") 'counsel-file-jump)
+(global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+(global-set-key (kbd "C-c C-r") 'ivy-resume)
+(global-set-key (kbd "C-c b") 'counsel-bookmark)
+(global-set-key (kbd "C-c d") 'counsel-descbinds)
+(global-set-key (kbd "C-c g") 'counsel-git)
+(global-set-key (kbd "C-c o") 'counsel-outline)
+(global-set-key (kbd "C-c t") 'counsel-load-theme)
+(global-set-key (kbd "C-c F") 'counsel-org-file)
 
-  (global-set-key (kbd "C-x K") 'my-kill-everything)
+(global-set-key (kbd "C-x K") 'my-kill-everything)
 
-  (global-set-key (kbd "C-t") 'goto-line-preview)
+(global-set-key (kbd "C-t") 'goto-line-preview)
 
-  (global-set-key (kbd "M-<up>") 'move-dup-move-lines-up)
-  (global-set-key (kbd "M-<down>") 'move-dup-move-lines-down)
-  (global-set-key (kbd "C-M-<up>") 'move-dup-duplicate-up)
-  (global-set-key (kbd "C-M-<down>") 'move-dup-duplicate-down)
+(global-set-key (kbd "M-<up>") 'move-dup-move-lines-up)
+(global-set-key (kbd "M-<down>") 'move-dup-move-lines-down)
+(global-set-key (kbd "C-M-<up>") 'move-dup-duplicate-up)
+(global-set-key (kbd "C-M-<down>") 'move-dup-duplicate-down)
 
-  (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-  (global-set-key (kbd "C-.") 'mc/mark-next-like-this)
-  (global-set-key (kbd "C-,") 'mc/mark-previous-like-this)
-  (global-set-key (kbd "C-c C-,") 'mc/mark-all-like-this)
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C-.") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-,") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-,") 'mc/mark-all-like-this)
 
-  (global-set-key (kbd "M-RET") 'my-split-window-horizontally-and-focus-vterm)
+(global-set-key (kbd "M-RET") 'my-split-window-horizontally-and-focus-vterm)
+(global-set-key (kbd "C-x 2") 'my-split-window-vertically-and-focus)
+(global-set-key (kbd "C-x 3") 'my-split-window-horizontally-and-focus)
+
+(define-key emacs-lisp-mode-map (kbd "C-x M-e") 'eval-buffer)
 #+END_SRC
 ** Local
 #+BEGIN_SRC elisp
@@ -243,6 +247,9 @@ My configuration uses src_elisp{use-package} as its package management utility.
 
   (use-package move-dup
     :ensure t)
+
+  (use-package goto-line-preview
+    :ensure t)
 #+END_SRC
 
 * Vterm
@@ -285,9 +292,6 @@ My configuration uses src_elisp{use-package} as its package management utility.
   (setq doom-modeline-mu4e t)
   (setq doom-modeline--battery-status t)
   (setq doom-modeline-time-icon t)
-
-  (use-package all-the-icons
-    :ensure t)
 #+END_SRC
 
 * Dired
@@ -394,7 +398,6 @@ My configuration uses src_elisp{use-package} as its package management utility.
 
 * Dashboard
 #+BEGIN_SRC elisp
-  ;; Dashboard settings
   (use-package dashboard
     :ensure t
     :init
@@ -403,14 +406,15 @@ My configuration uses src_elisp{use-package} as its package management utility.
       (setq dashboard-banner-logo-title "There is no system but GNU, and Linux is one of its kernels.")
       (setq dashboard-set-file-icons t)
       (setq dashboard-set-heading-icons t)
-      (setq dashboard-startup-banner (random-dashboard-image-path)))
+      (setq dashboard-set-footer nil)
+      (setq dashboard-startup-banner (my-random-dashboard-image-path)))
     :config
     (dashboard-setup-startup-hook)
   (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
-  (setq dashboard-items '((recents  . 3)
+  (setq dashboard-items '((recents  . 4)
                           ;;(projects . 3)
                           ;;(agenda . 5)
-                          ;;(bookmarks . 5)
+                          (bookmarks . 1)
                           )))
 #+END_SRC
 
@@ -424,6 +428,7 @@ My configuration uses src_elisp{use-package} as its package management utility.
     :config
     (lsp-enable-which-key-integration t))
 
+
   ;; Increase the amount of data which Emacs reads from the process.
   ;; Default value is causing a slowdown, it's too low to handle server responses.
   (setq read-process-output-max (*(* 1024 1024) 3)) ;; 3mb
@@ -433,6 +438,8 @@ My configuration uses src_elisp{use-package} as its package management utility.
 
   (add-hook 'lsp-mode-hook #'yas-minor-mode-on)
   (add-hook 'lsp-mode-hook #'tree-sitter-hl-mode)
+  (with-eval-after-load 'lsp-mode
+      (define-key lsp-mode-map (kbd "C-c l = =") 'my-match-lsp-formatting))
 
   ;; Better completions
   (use-package company
@@ -467,10 +474,6 @@ My configuration uses src_elisp{use-package} as its package management utility.
 
   (with-eval-after-load 'lsp-mode
     (yas-global-mode))
-
-  (use-package goto-line-preview
-    :ensure t)
-
 #+END_SRC
 
 * Programming Languages Setup
@@ -503,13 +506,10 @@ My configuration uses src_elisp{use-package} as its package management utility.
   (add-hook 'c-mode-hook 'lsp)
   (add-hook 'c-mode-hook 'tree-sitter-hl-mode)
   (setq-default c-basic-offset 4)
-  (add-hook 'c++-mode-hook 'lsp)
+  (add-hook 'c++-mode-hook 'rebind)
   (add-hook 'c++-mode-hook 'tree-sitter-hl-mode)
+  (add-hook 'c++-mode-hook 'lsp)
   (setq-default c++-basic-offset 4)
-
-  (defun cc-mode-my-rebind-formatting ()
-    (local-set-key (kbd "C-c l = =") 'clang-format-buffer))
-  (add-hook 'c++-mode-hook 'cc-mode-my-rebind-formatting)
 
   (use-package clang-format
     :ensure t)
@@ -541,6 +541,10 @@ My configuration uses src_elisp{use-package} as its package management utility.
   ;;(require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
   ;; ## end of OPAM user-setup addition for emacs / base ## keep this line
 
+#+END_SRC
+** Emacs Lisp
+#+BEGIN_SRC elisp
+  (add-hook 'emacs-lisp-mode-hook 'company-mode)
 #+END_SRC
 * Org
 #+BEGIN_SRC elisp

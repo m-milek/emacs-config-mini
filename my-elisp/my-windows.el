@@ -14,7 +14,3 @@
   (other-window 1)
   (vterm))
 
-
-;;(my-split-window-vertically-and-focus)
-;;(my-split-window-horizontally-and-focus)
-;;(my-split-window-horizontally-and-focus-vterm)

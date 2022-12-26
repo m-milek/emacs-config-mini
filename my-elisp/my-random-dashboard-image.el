@@ -6,6 +6,6 @@
        "kaguya-emacs-scaled.png"
        ))
 
-(defun random-dashboard-image-path ()
+(defun my-random-dashboard-image-path ()
   (setq picture-dir "/home/michal/.emacs.d/dashboard-pictures/")
   (concat picture-dir (nth (random (length file-list)) file-list)))
