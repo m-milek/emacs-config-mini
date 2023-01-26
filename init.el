@@ -14,14 +14,25 @@
 (setq visible-bell nil)
 (global-visual-line-mode -1)
 
-(set-face-attribute 'default nil :font "Source Code Pro" :height 140)
-;;(set-face-attribute 'default nil :font "CozetteVector" :height 150)
+;; Set the variable pitch face
+(set-face-attribute 'variable-pitch nil
+                    :font "Iosevka Aile"
+                    :height 150)
+
+(set-face-attribute 'default nil
+                    :font "Source Code Pro"
+                    :height 150)
+
+;; Set the fixed pitch face
+(set-face-attribute 'fixed-pitch nil
+                    :font "Source Code Pro"
+                    :height 150)
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 (require 'package)
 (setq package-archives '(
-                         ("melpa" . "https://melpa.org/packages/")
+                         ;;("melpa" . "https://melpa.org/packages/")
                          ("melpa-stable" . "https://stable.melpa.org/packages/")
                          ("org" . "https://orgmode.org/elpa/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
@@ -104,7 +115,7 @@
 (global-set-key (kbd "C-c L") 'counsel-git-log)
 (global-set-key (kbd "C-c k") 'counsel-rg)
 (global-set-key (kbd "C-c m") 'counsel-linux-app)
-(global-set-key (kbd "C-c n") 'counsel-fzf)
+(global-set-key (kbd "C-c f") 'counsel-fzf)
 (global-set-key (kbd "C-x l") 'counsel-locate)
 (global-set-key (kbd "C-c J") 'counsel-file-jump)
 (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
@@ -134,7 +145,7 @@
 (global-set-key (kbd "C-x 2") 'my-split-window-vertically-and-focus)
 (global-set-key (kbd "C-x 3") 'my-split-window-horizontally-and-focus)
 
-(define-key emacs-lisp-mode-map (kbd "C-x M-e") 'eval-buffer)
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 (define-key emacs-lisp-mode-map (kbd "C-x M-e") 'eval-buffer)
 
@@ -336,6 +347,7 @@
   )
 
 (setq-default indent-tabs-mode nil)
+(setq ivy-extra-directories nil)
 
 (use-package dashboard
   :ensure t
@@ -350,10 +362,11 @@
   :config
   (dashboard-setup-startup-hook)
 (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
-(setq dashboard-items '((recents  . 4)
+(setq dashboard-items '(
+                        ;;(recents  . 4)
                         ;;(projects . 3)
                         ;;(agenda . 5)
-                        (bookmarks . 1)
+                        (bookmarks . 3)
                         )))
 
 (use-package lsp-mode
@@ -460,56 +473,82 @@
 (add-hook 'emacs-lisp-mode-hook 'company-mode)
 
 (defun my-org-mode-setup ()
-  (setq org-startup-indented t)
-  (org-indent-mode)
-  (variable-pitch-mode -1) ;;enable a non-monospace font
-  (auto-fill-mode 0)
-  (visual-line-mode 1))
+    (setq org-startup-indented t)
+    (org-indent-mode)
+    (variable-pitch-mode 1) ;;enable a non-monospace font
+    (auto-fill-mode 0)
+    (visual-line-mode 1))
 
-(use-package org
-  :ensure t
-  :hook (org-mode . my-org-mode-setup)
-  :config
-  (setq org-ellipsis " ⏷"
-        org-hide-emphasis-markers nil))
+  (use-package org
+    :ensure t
+    :hook (org-mode . my-org-mode-setup)
+    :config
+    (setq org-ellipsis " ⏷"
+          org-hide-emphasis-markers nil))
 
-(use-package org-bullets
+  (use-package org-bullets
+    :ensure t
+    :after org
+    :hook (org-mode . org-bullets-mode)
+    :custom
+    (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+  (require 'org-indent)
+
+  (set-face-attribute 'org-document-title nil :font "Iosevka Aile" :weight 'bold :height 1.3)
+  (with-eval-after-load 'org-faces
+    (dolist (face '((org-level-1 . 1.25)
+                    (org-level-2 . 1.15)
+                    (org-level-3 . 1.05)
+                    (org-level-4 . 1.0)
+                    (org-level-5 . 1.0)
+                    (org-level-6 . 1.0)
+                    (org-level-7 . 1.1)
+                    (org-level-8 . 1.1)))
+      (set-face-attribute (car face) nil
+                          :font "Iosevka Aile"
+                          :height (cdr face))
+;; Ensure that anything that should be fixed-pitch in Org files appears that way
+(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-table nil  :inherit 'fixed-pitch)
+(set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+(set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+    ))
+
+  (defun my-org-mode-visual-fill ()
+    (setq visual-fill-column-width 100
+          visual-fill-column-center-text t)
+    (visual-fill-column-mode 1))
+
+  (use-package visual-fill-column
+    :ensure t
+    :hook (org-mode . my-org-mode-visual-fill))
+
+  (use-package org-download
+    :ensure t
+    :hook org-mode-hook)
+
+  (add-hook 'org-mode-hook
+            (lambda () (local-set-key (kbd "C-j") nil)))
+
+
+
+  (with-eval-after-load 'org-mode-map (define-key org-mode-map (kbd "C-j") nil))
+
+(use-package org-roam
   :ensure t
-  :after org
-  :hook (org-mode . org-bullets-mode)
   :custom
-  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
-
-(with-eval-after-load 'org-faces (dolist (face '((org-level-1 . 1.25)
-                (org-level-2 . 1.15)
-                (org-level-3 . 1.05)
-                (org-level-4 . 1.0)
-                (org-level-5 . 1.1)
-                (org-level-6 . 1.1)
-                (org-level-7 . 1.1)
-                (org-level-8 . 1.1)))
-  (set-face-attribute (car face) nil
-                      :font "Source Code Pro"
-                      :weight 'regular
-                      :height (cdr face))))
-
-(defun my-org-mode-visual-fill ()
-  (setq visual-fill-column-width 100
-        visual-fill-column-center-text t)
-  (visual-fill-column-mode 1))
-
-(use-package visual-fill-column
-  :ensure t
-  :hook (org-mode . my-org-mode-visual-fill))
-
-(use-package org-download
-  :ensure t
-  :hook org-mode-hook)
-
-(add-hook 'org-mode-hook
-          (lambda () (local-set-key (kbd "C-j") nil)))
-
-(with-eval-after-load 'org-mode-map (define-key org-mode-map (kbd "C-j") nil))
+  (org-roam-directory "~/Documents/RoamNotes")
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n i" . org-roam-node-insert))
+  :config
+  (org-roam-setup))
 
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
 
@@ -558,7 +597,23 @@
 (setq elfeed-feeds
       '(
         "https://blog.rust-lang.org/feed.xml"
-        "http://www.reddit.com/r/emacs/.rss"
+        ;;"http://www.reddit.com/r/emacs/.rss"
+        "http://blogs.law.harvard.edu/tech/rss"
+        "https://sachachua.com/blog/category/emacs-news/feed/"
         ))
 
 (shell-command "/usr/bin/xmodmap /home/michal/.Xmodmap")
+
+(use-package keyfreq
+  :ensure t)
+(keyfreq-mode 1)
+(keyfreq-autosave-mode 1)
+(setq keyfreq-excluded-commands
+    '(self-insert-command
+      lsp-ui-doc--handle-mouse-movement
+      mwheel-scroll
+      ;;forward-char
+      ;;backward-char
+      ;;previous-line
+      ;;next-line
+      ))

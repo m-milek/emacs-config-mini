@@ -3,6 +3,12 @@
   (dolist (cur (buffer-list))
     (kill-buffer cur)))
 
+(defun my-match-lsp-formatting ()
+  (interactive)
+  (if (or (eq major-mode 'c-mode) (eq major-mode 'c++-mode))
+      (clang-format-buffer)
+    (lsp-format-buffer)))
+
 (defun my-fix-file-indent ()
   (interactive)
   (goto-char (point-min))
@@ -11,8 +17,29 @@
     (company-indent-or-complete-common t)
     (forward-line 1)))
 
-(defun my-match-lsp-formatting ()
+(defun my-save-point ()
+  "Save the current frame, window and point in a buffer"
   (interactive)
-  (if (or (eq major-mode 'c-mode) (eq major-mode 'c++-mode))
-      (clang-format-buffer)
-    (lsp-format-buffer)))
+  (setq my-saved-frame (selected-frame))
+  (setq my-saved-window (frame-selected-window))
+  (setq my-saved-mark (point-marker))
+  (message "Saved mark %s" my-saved-mark))
+
+(defun my-save-point-and-fn (arg-fn)
+  "Execute my-save-point and then execute arg-fn"
+  (interactive)
+  (my-save-point)
+  (funcall arg-fn))
+
+(defun my-go-to-saved-point ()
+  "Select frame from my-saved-frame, select window
+from my-saved-window,
+set mark from my-saved-mark"
+  (interactive)
+  (select-frame my-saved-frame)
+  (select-window my-saved-window)
+  (set-mark my-saved-mark)
+  (exchange-point-and-mark)
+  (message "Moved to mark %s" my-saved-mark)
+  (keyboard-escape-quit))
+

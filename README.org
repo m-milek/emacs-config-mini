@@ -33,8 +33,20 @@ This makes for a minimal Emacs UI, without distracting icons and menus.
 
 * Font
 #+BEGIN_SRC elisp
-  (set-face-attribute 'default nil :font "Source Code Pro" :height 140)
-  ;;(set-face-attribute 'default nil :font "CozetteVector" :height 150)
+  ;; Set the variable pitch face
+  (set-face-attribute 'variable-pitch nil
+                      :font "Iosevka Aile"
+                      :height 150)
+
+  (set-face-attribute 'default nil
+                      :font "Source Code Pro"
+                      :height 150)
+
+  ;; Set the fixed pitch face
+  (set-face-attribute 'fixed-pitch nil
+                      :font "Source Code Pro"
+                      :height 150)
+
 #+END_SRC
 
 * Package Management
@@ -44,7 +56,7 @@ My configuration uses src_elisp{use-package} as its package management utility.
 
   (require 'package)
   (setq package-archives '(
-                           ("melpa" . "https://melpa.org/packages/")
+                           ;;("melpa" . "https://melpa.org/packages/")
                            ("melpa-stable" . "https://stable.melpa.org/packages/")
                            ("org" . "https://orgmode.org/elpa/")
                            ("elpa" . "https://elpa.gnu.org/packages/")))
@@ -60,113 +72,120 @@ My configuration uses src_elisp{use-package} as its package management utility.
 
 * Ivy, Swiper, Counsel
 #+BEGIN_SRC elisp
-  (use-package diminish)
+    (use-package diminish)
 
-  (use-package swiper
-    :ensure t)
+    (use-package swiper
+      :ensure t)
 
-  (use-package ivy
-    :diminish
-    :bind (("C-s" . swiper)
-           :map ivy-minibuffer-map
-           ("TAB" . ivy-alt-done)
-           ("C-l" . ivy-alt-done)
-           ("C-j" . ivy-next-line)
-           ("C-k" . ivy-previous-line)
-           :map ivy-switch-buffer-map
-           ("C-k" . ivy-previous-line)
-           ("C-l" . ivy-done)
-           ("C-d" . ivy-switch-buffer-kill)
-           :map ivy-reverse-i-search-map
-           ("C-k" . ivy-previous-line)
-           ("C-d" . ivy-previous-i-search-kill))
-    :config
-    (ivy-mode 1))
+    (use-package ivy
+      :diminish
+      :bind (
+             ;("C-s" . swiper)
+             :map ivy-minibuffer-map
+             ("TAB" . ivy-alt-done)
+             ("C-l" . ivy-alt-done)
+             ("C-j" . ivy-next-line)
+             ("C-k" . ivy-previous-line)
+             :map ivy-switch-buffer-map
+             ("C-k" . ivy-previous-line)
+             ("C-l" . ivy-done)
+             ("C-d" . ivy-switch-buffer-kill)
+             :map ivy-reverse-i-search-map
+             ("C-k" . ivy-previous-line)
+             ("C-d" . ivy-previous-i-search-kill))
+      :config
+      (ivy-mode 1))
 
-  (use-package counsel
-    :ensure t
-    :defer
-    :config
-    ;; Remove the '^' at the beginning of counsel commands
-    (setq ivy-initial-inputs-alist nil))
+    (use-package counsel
+      :ensure t
+      :defer
+      :config
+      ;; Remove the '^' at the beginning of counsel commands
+      (setq ivy-initial-inputs-alist nil))
 
   #+END_SRC
 
 * Keybindings
 ** Global
 #+BEGIN_SRC elisp
-(global-set-key (kbd "C-h") 'backward-char)
-(global-unset-key (kbd "C-j"))
-(global-set-key (kbd "C-j") 'next-line)
-(global-set-key (kbd "C-k") 'previous-line)
-(global-set-key (kbd "C-l") 'forward-char)
-(global-set-key (kbd "C-M-h") 'left-word)
-(global-unset-key (kbd "C-M-j"))
-(global-set-key (kbd "C-M-j") nil)
-(global-set-key (kbd "C-M-j") (lambda () (interactive) (next-line 4)))
-(global-set-key (kbd "C-M-k") (lambda () (interactive) (previous-line 4)))
-(global-set-key (kbd "C-M-l") 'right-word)
-(global-set-key (kbd "C-m") 'back-to-indentation)
-(global-set-key (kbd "RET") 'newline)
+  (global-set-key (kbd "C-h") 'backward-char)
+  (global-unset-key (kbd "C-j"))
+  (global-set-key (kbd "C-j") 'next-line)
+  (global-set-key (kbd "C-k") 'previous-line)
+  (global-set-key (kbd "C-l") 'forward-char)
+  (global-set-key (kbd "C-M-h") 'left-word)
+  (global-unset-key (kbd "C-M-j"))
+  (global-set-key (kbd "C-M-j") nil)
+  (global-set-key (kbd "C-M-j") (lambda () (interactive) (next-line 4)))
+  (global-set-key (kbd "C-M-k") (lambda () (interactive) (previous-line 4)))
+  (global-set-key (kbd "C-M-l") 'right-word)
+  (global-set-key (kbd "C-m") 'back-to-indentation)
+  (global-set-key (kbd "RET") 'newline)
 
-(global-set-key (kbd "C-c w") 'toggle-truncate-lines)
+  (global-set-key (kbd "C-c w") 'toggle-truncate-lines)
 
-(global-set-key (kbd "C-n") 'electric-newline-and-maybe-indent)
-(global-set-key (kbd "C-f") 'kill-line)
-(global-set-key (kbd "C-p") 'help-command)
-(global-set-key (kbd "C-b") 'recenter-top-bottom)
-(global-set-key (kbd "C-M-o") 'counsel-switch-buffer)
+  (global-set-key (kbd "C-n") 'electric-newline-and-maybe-indent)
+  (global-set-key (kbd "C-f") 'kill-line)
+  (global-set-key (kbd "C-p") 'help-command)
+  (global-set-key (kbd "C-b") 'recenter-top-bottom)
+  (global-set-key (kbd "C-M-o") 'counsel-switch-buffer)
 
-(global-set-key (kbd "M-x") 'counsel-M-x)
-(global-set-key (kbd "C-x C-f") 'counsel-find-file)
-(global-set-key (kbd "M-y") 'counsel-yank-pop)
-(global-set-key (kbd "<f1> f") 'counsel-describe-function)
-(global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-(global-set-key (kbd "<f1> l") 'counsel-find-library)
-(global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-(global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-(global-set-key (kbd "<f2> j") 'counsel-set-variable)
-(global-set-key (kbd "C-x b") 'ivy-switch-buffer)
-(global-set-key (kbd "C-c v") 'ivy-push-view)
-(global-set-key (kbd "C-c V") 'ivy-pop-view)
-(global-set-key (kbd "C-c c") 'counsel-compile)
-(global-set-key (kbd "C-c g") 'counsel-git)
-(global-set-key (kbd "C-c j") 'counsel-git-grep)
-(global-set-key (kbd "C-c L") 'counsel-git-log)
-(global-set-key (kbd "C-c k") 'counsel-rg)
-(global-set-key (kbd "C-c m") 'counsel-linux-app)
-(global-set-key (kbd "C-c n") 'counsel-fzf)
-(global-set-key (kbd "C-x l") 'counsel-locate)
-(global-set-key (kbd "C-c J") 'counsel-file-jump)
-(global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
-(global-set-key (kbd "C-c C-r") 'ivy-resume)
-(global-set-key (kbd "C-c b") 'counsel-bookmark)
-(global-set-key (kbd "C-c d") 'counsel-descbinds)
-(global-set-key (kbd "C-c g") 'counsel-git)
-(global-set-key (kbd "C-c o") 'counsel-outline)
-(global-set-key (kbd "C-c t") 'counsel-load-theme)
-(global-set-key (kbd "C-c F") 'counsel-org-file)
+  (global-set-key (kbd "M-x") 'counsel-M-x)
+  (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+  (global-set-key (kbd "M-y") 'counsel-yank-pop)
+  (global-set-key (kbd "<f1> f") 'counsel-describe-function)
+  (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+  (global-set-key (kbd "<f1> l") 'counsel-find-library)
+  (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+  (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+  (global-set-key (kbd "<f2> j") 'counsel-set-variable)
+  (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
+  (global-set-key (kbd "C-c v") 'ivy-push-view)
+  (global-set-key (kbd "C-c V") 'ivy-pop-view)
+  (global-set-key (kbd "C-c c") 'counsel-compile)
+  (global-set-key (kbd "C-c g") 'counsel-git)
+  (global-set-key (kbd "C-c j") 'counsel-git-grep)
+  (global-set-key (kbd "C-c L") 'counsel-git-log)
+  (global-set-key (kbd "C-c k") 'counsel-rg)
+  (global-set-key (kbd "C-c m") 'counsel-linux-app)
+  (global-set-key (kbd "C-c f") 'counsel-fzf)
+  (global-set-key (kbd "C-x l") 'counsel-locate)
+  (global-set-key (kbd "C-c J") 'counsel-file-jump)
+  (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+  (global-set-key (kbd "C-c C-r") 'ivy-resume)
+  (global-set-key (kbd "C-c b") 'counsel-bookmark)
+  (global-set-key (kbd "C-c d") 'counsel-descbinds)
+  (global-set-key (kbd "C-c o") 'counsel-outline)
+  (global-set-key (kbd "C-c t") 'counsel-load-theme)
+  (global-set-key (kbd "C-c F") 'counsel-org-file)
 
-(global-set-key (kbd "C-x K") 'my-kill-everything)
+  (global-set-key (kbd "C-x K") 'my-kill-everything)
 
-(global-set-key (kbd "C-t") 'goto-line-preview)
+  (global-set-key (kbd "C-t") 'goto-line-preview)
 
-(global-set-key (kbd "M-<up>") 'move-dup-move-lines-up)
-(global-set-key (kbd "M-<down>") 'move-dup-move-lines-down)
-(global-set-key (kbd "C-M-<up>") 'move-dup-duplicate-up)
-(global-set-key (kbd "C-M-<down>") 'move-dup-duplicate-down)
+  (global-set-key (kbd "M-<up>") 'move-dup-move-lines-up)
+  (global-set-key (kbd "M-<down>") 'move-dup-move-lines-down)
+  (global-set-key (kbd "C-M-<up>") 'move-dup-duplicate-up)
+  (global-set-key (kbd "C-M-<down>") 'move-dup-duplicate-down)
 
-(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-(global-set-key (kbd "C-.") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-,") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c C-,") 'mc/mark-all-like-this)
+  (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+  (global-set-key (kbd "C-.") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-,") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C-,") 'mc/mark-all-like-this)
 
-(global-set-key (kbd "M-RET") 'my-split-window-horizontally-and-focus-vterm)
-(global-set-key (kbd "C-x 2") 'my-split-window-vertically-and-focus)
-(global-set-key (kbd "C-x 3") 'my-split-window-horizontally-and-focus)
-
-(define-key emacs-lisp-mode-map (kbd "C-x M-e") 'eval-buffer)
+  (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 #+END_SRC
+
+** My Elisp
+#+BEGIN_SRC elisp
+  (global-set-key (kbd "M-RET") 'my-split-window-horizontally-and-focus-vterm)
+  (global-set-key (kbd "C-x 2") 'my-split-window-vertically-and-focus)
+  (global-set-key (kbd "C-x 3") 'my-split-window-horizontally-and-focus)
+  (global-set-key (kbd "C-r") 'my-go-to-saved-point)
+  (global-set-key (kbd "C-s") (lambda () (interactive) (my-save-point-and-fn 'swiper)))
+  (global-set-key (kbd "C-M-s") 'my-save-point)
+#+END_SRC
+
 ** Local
 #+BEGIN_SRC elisp
   (define-key emacs-lisp-mode-map (kbd "C-x M-e") 'eval-buffer)
@@ -394,28 +413,30 @@ My configuration uses src_elisp{use-package} as its package management utility.
     )
 
   (setq-default indent-tabs-mode nil)
+  (setq ivy-extra-directories nil)
 #+END_SRC
 
 * Dashboard
 #+BEGIN_SRC elisp
-  (use-package dashboard
-    :ensure t
-    :init
-    (progn
-      (setq dashboard-center-content t)
-      (setq dashboard-banner-logo-title "There is no system but GNU, and Linux is one of its kernels.")
-      (setq dashboard-set-file-icons t)
-      (setq dashboard-set-heading-icons t)
-      (setq dashboard-set-footer nil)
-      (setq dashboard-startup-banner (my-random-dashboard-image-path)))
-    :config
-    (dashboard-setup-startup-hook)
-  (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
-  (setq dashboard-items '((recents  . 4)
-                          ;;(projects . 3)
-                          ;;(agenda . 5)
-                          (bookmarks . 1)
-                          )))
+    (use-package dashboard
+      :ensure t
+      :init
+      (progn
+        (setq dashboard-center-content t)
+        (setq dashboard-banner-logo-title "There is no system but GNU, and Linux is one of its kernels.")
+        (setq dashboard-set-file-icons t)
+        (setq dashboard-set-heading-icons t)
+        (setq dashboard-set-footer nil)
+        (setq dashboard-startup-banner (my-random-dashboard-image-path)))
+      :config
+      (dashboard-setup-startup-hook)
+    (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+    (setq dashboard-items '(
+                            ;;(recents  . 4)
+                            ;;(projects . 3)
+                            ;;(agenda . 5)
+                            (bookmarks . 3)
+                            )))
 #+END_SRC
 
 * LSP, Company
@@ -548,57 +569,87 @@ My configuration uses src_elisp{use-package} as its package management utility.
 #+END_SRC
 * Org
 #+BEGIN_SRC elisp
-  (defun my-org-mode-setup ()
-    (setq org-startup-indented t)
-    (org-indent-mode)
-    (variable-pitch-mode -1) ;;enable a non-monospace font
-    (auto-fill-mode 0)
-    (visual-line-mode 1))
+    (defun my-org-mode-setup ()
+      (setq org-startup-indented t)
+      (org-indent-mode)
+      (variable-pitch-mode 1) ;;enable a non-monospace font
+      (auto-fill-mode 0)
+      (visual-line-mode 1))
 
-  (use-package org
-    :ensure t
-    :hook (org-mode . my-org-mode-setup)
-    :config
-    (setq org-ellipsis " ⏷"
-          org-hide-emphasis-markers nil))
+    (use-package org
+      :ensure t
+      :hook (org-mode . my-org-mode-setup)
+      :config
+      (setq org-ellipsis " ⏷"
+            org-hide-emphasis-markers nil))
 
-  (use-package org-bullets
+    (use-package org-bullets
+      :ensure t
+      :after org
+      :hook (org-mode . org-bullets-mode)
+      :custom
+      (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+    (require 'org-indent)
+
+    (set-face-attribute 'org-document-title nil :font "Iosevka Aile" :weight 'bold :height 1.3)
+    (with-eval-after-load 'org-faces
+      (dolist (face '((org-level-1 . 1.25)
+                      (org-level-2 . 1.15)
+                      (org-level-3 . 1.05)
+                      (org-level-4 . 1.0)
+                      (org-level-5 . 1.0)
+                      (org-level-6 . 1.0)
+                      (org-level-7 . 1.1)
+                      (org-level-8 . 1.1)))
+        (set-face-attribute (car face) nil
+                            :font "Iosevka Aile"
+                            :height (cdr face))
+  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-table nil  :inherit 'fixed-pitch)
+  (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+      ))
+
+    (defun my-org-mode-visual-fill ()
+      (setq visual-fill-column-width 100
+            visual-fill-column-center-text t)
+      (visual-fill-column-mode 1))
+
+    (use-package visual-fill-column
+      :ensure t
+      :hook (org-mode . my-org-mode-visual-fill))
+
+    (use-package org-download
+      :ensure t
+      :hook org-mode-hook)
+
+    (add-hook 'org-mode-hook
+              (lambda () (local-set-key (kbd "C-j") nil)))
+
+
+
+    (with-eval-after-load 'org-mode-map (define-key org-mode-map (kbd "C-j") nil))
+#+END_SRC
+* org-roam
+#+BEGIN_SRC elisp
+
+  (use-package org-roam
     :ensure t
-    :after org
-    :hook (org-mode . org-bullets-mode)
     :custom
-    (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+    (org-roam-directory "~/Documents/RoamNotes")
+    :bind (("C-c n l" . org-roam-buffer-toggle)
+           ("C-c n f" . org-roam-node-find)
+           ("C-c n i" . org-roam-node-insert))
+    :config
+    (org-roam-setup))
 
-  (with-eval-after-load 'org-faces (dolist (face '((org-level-1 . 1.25)
-                  (org-level-2 . 1.15)
-                  (org-level-3 . 1.05)
-                  (org-level-4 . 1.0)
-                  (org-level-5 . 1.1)
-                  (org-level-6 . 1.1)
-                  (org-level-7 . 1.1)
-                  (org-level-8 . 1.1)))
-    (set-face-attribute (car face) nil
-                        :font "Source Code Pro"
-                        :weight 'regular
-                        :height (cdr face))))
-
-  (defun my-org-mode-visual-fill ()
-    (setq visual-fill-column-width 100
-          visual-fill-column-center-text t)
-    (visual-fill-column-mode 1))
-
-  (use-package visual-fill-column
-    :ensure t
-    :hook (org-mode . my-org-mode-visual-fill))
-
-  (use-package org-download
-    :ensure t
-    :hook org-mode-hook)
-
-  (add-hook 'org-mode-hook
-            (lambda () (local-set-key (kbd "C-j") nil)))
-
-  (with-eval-after-load 'org-mode-map (define-key org-mode-map (kbd "C-j") nil))
 #+END_SRC
 
 * mu4e
@@ -654,11 +705,30 @@ My configuration uses src_elisp{use-package} as its package management utility.
   (setq elfeed-feeds
         '(
           "https://blog.rust-lang.org/feed.xml"
-          "http://www.reddit.com/r/emacs/.rss"
+          ;;"http://www.reddit.com/r/emacs/.rss"
+          "http://blogs.law.harvard.edu/tech/rss"
+          "https://sachachua.com/blog/category/emacs-news/feed/"
           ))
 #+END_SRC
 
 * Other
 #+BEGIN_SRC elisp
   (shell-command "/usr/bin/xmodmap /home/michal/.Xmodmap")
+#+END_SRC
+
+* Keyfreq
+#+BEGIN_SRC elisp
+  (use-package keyfreq
+    :ensure t)
+  (keyfreq-mode 1)
+  (keyfreq-autosave-mode 1)
+  (setq keyfreq-excluded-commands
+      '(self-insert-command
+        lsp-ui-doc--handle-mouse-movement
+        mwheel-scroll
+        ;;forward-char
+        ;;backward-char
+        ;;previous-line
+        ;;next-line
+        ))
 #+END_SRC
