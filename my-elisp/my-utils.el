@@ -43,3 +43,17 @@ set mark from my-saved-mark"
   (message "Moved to mark %s" my-saved-mark)
   (keyboard-escape-quit))
 
+(setq my-vterm-toggled nil)
+(setq my-vterm-window nil)
+(defun my-toggle-vterm-below ()
+  (interactive)
+  (if (eq my-vterm-toggled t)
+      (progn
+        (delete-window my-vterm-window)
+        (setq my-vterm-toggled nil))
+    (progn
+      (setq my-vterm-window (split-window-below -15))
+      (setq my-vterm-toggled t)
+      (other-window 1)
+      (vterm))))
+

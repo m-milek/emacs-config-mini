@@ -184,6 +184,7 @@ My configuration uses src_elisp{use-package} as its package management utility.
   (global-set-key (kbd "C-r") 'my-go-to-saved-point)
   (global-set-key (kbd "C-s") (lambda () (interactive) (my-save-point-and-fn 'swiper)))
   (global-set-key (kbd "C-M-s") 'my-save-point)
+  (global-set-key (kbd "C-`") 'my-toggle-vterm-below)
 #+END_SRC
 
 ** Local
@@ -269,6 +270,7 @@ My configuration uses src_elisp{use-package} as its package management utility.
 
   (use-package goto-line-preview
     :ensure t)
+
 #+END_SRC
 
 * Vterm
@@ -566,6 +568,13 @@ My configuration uses src_elisp{use-package} as its package management utility.
 ** Emacs Lisp
 #+BEGIN_SRC elisp
   (add-hook 'emacs-lisp-mode-hook 'company-mode)
+#+END_SRC
+** Go
+#+BEGIN_SRC elisp
+  (use-package go-mode
+    :ensure t)
+  (add-hook 'go-mode-hook 'lsp)
+  (add-hook 'go-mode-hook (lambda () (setq tab-width 4)))
 #+END_SRC
 * Org
 #+BEGIN_SRC elisp

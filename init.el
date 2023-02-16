@@ -52,7 +52,8 @@
 
 (use-package ivy
   :diminish
-  :bind (("C-s" . swiper)
+  :bind (
+         ;("C-s" . swiper)
          :map ivy-minibuffer-map
          ("TAB" . ivy-alt-done)
          ("C-l" . ivy-alt-done)
@@ -122,7 +123,6 @@
 (global-set-key (kbd "C-c C-r") 'ivy-resume)
 (global-set-key (kbd "C-c b") 'counsel-bookmark)
 (global-set-key (kbd "C-c d") 'counsel-descbinds)
-(global-set-key (kbd "C-c g") 'counsel-git)
 (global-set-key (kbd "C-c o") 'counsel-outline)
 (global-set-key (kbd "C-c t") 'counsel-load-theme)
 (global-set-key (kbd "C-c F") 'counsel-org-file)
@@ -141,11 +141,15 @@
 (global-set-key (kbd "C-,") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c C-,") 'mc/mark-all-like-this)
 
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
 (global-set-key (kbd "M-RET") 'my-split-window-horizontally-and-focus-vterm)
 (global-set-key (kbd "C-x 2") 'my-split-window-vertically-and-focus)
 (global-set-key (kbd "C-x 3") 'my-split-window-horizontally-and-focus)
-
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+(global-set-key (kbd "C-r") 'my-go-to-saved-point)
+(global-set-key (kbd "C-s") (lambda () (interactive) (my-save-point-and-fn 'swiper)))
+(global-set-key (kbd "C-M-s") 'my-save-point)
+(global-set-key (kbd "C-`") 'my-toggle-vterm-below)
 
 (define-key emacs-lisp-mode-map (kbd "C-x M-e") 'eval-buffer)
 
@@ -471,6 +475,11 @@
 ;; ## end of OPAM user-setup addition for emacs / base ## keep this line
 
 (add-hook 'emacs-lisp-mode-hook 'company-mode)
+
+(use-package go-mode
+  :ensure t)
+(add-hook 'go-mode-hook 'lsp)
+(add-hook 'go-mode-hook (lambda () (setq tab-width 4)))
 
 (defun my-org-mode-setup ()
     (setq org-startup-indented t)
