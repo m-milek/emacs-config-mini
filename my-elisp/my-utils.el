@@ -1,15 +1,15 @@
-(defun my-kill-everything ()
+(defun mm/kill-everything ()
   (interactive)
   (dolist (cur (buffer-list))
     (kill-buffer cur)))
 
-(defun my-match-lsp-formatting ()
+(defun mm/match-lsp-formatting ()
   (interactive)
   (if (or (eq major-mode 'c-mode) (eq major-mode 'c++-mode))
       (clang-format-buffer)
     (lsp-format-buffer)))
 
-(defun my-fix-file-indent ()
+(defun mm/fix-file-indent ()
   (interactive)
   (goto-char (point-min))
   (while (not (save-excursion (end-of-line) (eobp)))
@@ -17,7 +17,7 @@
     (company-indent-or-complete-common t)
     (forward-line 1)))
 
-(defun my-save-point ()
+(defun mm/save-point ()
   "Save the current frame, window and point in a buffer"
   (interactive)
   (setq my-saved-frame (selected-frame))
@@ -25,13 +25,13 @@
   (setq my-saved-mark (point-marker))
   (message "Saved mark %s" my-saved-mark))
 
-(defun my-save-point-and-fn (arg-fn)
+(defun mm/save-point-and-fn (arg-fn)
   "Execute my-save-point and then execute arg-fn"
   (interactive)
-  (my-save-point)
+  (mm/save-point)
   (funcall arg-fn))
 
-(defun my-go-to-saved-point ()
+(defun mm/go-to-saved-point ()
   "Select frame from my-saved-frame, select window
 from my-saved-window,
 set mark from my-saved-mark"
@@ -43,17 +43,23 @@ set mark from my-saved-mark"
   (message "Moved to mark %s" my-saved-mark)
   (keyboard-escape-quit))
 
-(setq my-vterm-toggled nil)
-(setq my-vterm-window nil)
-(defun my-toggle-vterm-below ()
+(defun mm/toggle-vterm-below ()
   (interactive)
-  (if (eq my-vterm-toggled t)
+  (let ((vterm-buffer (get-buffer "*vterm*"))
+        (vterm-size -15))
+    (cond
+     ;; Doesn't exist
+     ((eq vterm-buffer nil)
       (progn
-        (delete-window my-vterm-window)
-        (setq my-vterm-toggled nil))
-    (progn
-      (setq my-vterm-window (split-window-below -15))
-      (setq my-vterm-toggled t)
-      (other-window 1)
-      (vterm))))
-
+        (split-window-below vterm-size)
+        (other-window 1)
+        (vterm)))
+     ;; Visible
+     ((or (eq vterm-buffer (window-buffer (selected-window))) (get-buffer-window vterm-buffer))
+        (delete-window (get-buffer-window vterm-buffer)))
+     ;; Not visible
+     (t
+      (progn
+        (split-window-below vterm-size)
+        (other-window 1)
+        (switch-to-buffer vterm-buffer))))))

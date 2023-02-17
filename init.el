@@ -5,12 +5,12 @@
 
 (setq inhibit-startup-message t)
 (scroll-bar-mode 0);
-;visual scrollbar
+                                        ;visual scrollbar
 (tool-bar-mode 0)
 (tooltip-mode 0);
 (set-fringe-mode 0);
 (menu-bar-mode 0)
-; set up visible bell
+                                        ; set up visible bell
 (setq visible-bell nil)
 (global-visual-line-mode -1)
 
@@ -53,7 +53,7 @@
 (use-package ivy
   :diminish
   :bind (
-         ;("C-s" . swiper)
+                                        ;("C-s" . swiper)
          :map ivy-minibuffer-map
          ("TAB" . ivy-alt-done)
          ("C-l" . ivy-alt-done)
@@ -127,7 +127,7 @@
 (global-set-key (kbd "C-c t") 'counsel-load-theme)
 (global-set-key (kbd "C-c F") 'counsel-org-file)
 
-(global-set-key (kbd "C-x K") 'my-kill-everything)
+(global-set-key (kbd "C-x K") 'mm/kill-everything)
 
 (global-set-key (kbd "C-t") 'goto-line-preview)
 
@@ -143,13 +143,13 @@
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
-(global-set-key (kbd "M-RET") 'my-split-window-horizontally-and-focus-vterm)
-(global-set-key (kbd "C-x 2") 'my-split-window-vertically-and-focus)
-(global-set-key (kbd "C-x 3") 'my-split-window-horizontally-and-focus)
-(global-set-key (kbd "C-r") 'my-go-to-saved-point)
-(global-set-key (kbd "C-s") (lambda () (interactive) (my-save-point-and-fn 'swiper)))
-(global-set-key (kbd "C-M-s") 'my-save-point)
-(global-set-key (kbd "C-`") 'my-toggle-vterm-below)
+(global-set-key (kbd "M-RET") 'mm/split-window-horizontally-and-focus-vterm)
+(global-set-key (kbd "C-x 2") 'mm/split-window-vertically-and-focus)
+(global-set-key (kbd "C-x 3") 'mm/split-window-horizontally-and-focus)
+(global-set-key (kbd "C-r") 'mm/go-to-saved-point)
+(global-set-key (kbd "C-s") (lambda () (interactive) (mm/save-point-and-fn 'swiper)))
+(global-set-key (kbd "C-M-s") 'mm/save-point)
+(global-set-key (kbd "C-`") 'mm/toggle-vterm-below)
 
 (define-key emacs-lisp-mode-map (kbd "C-x M-e") 'eval-buffer)
 
@@ -162,7 +162,7 @@
 (use-package which-key
   :ensure t)
 (which-key-mode 1)
-  (use-package ivy-rich
+(use-package ivy-rich
   :ensure t
   :init
   (ivy-rich-mode 1))
@@ -237,11 +237,11 @@
   (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *")
   (setq vterm-max-scrollback 10000))
 
-  ;; Fix broken prompt and completion prompts while running fish shell
+;; Fix broken prompt and completion prompts while running fish shell
 (with-eval-after-load 'vterm(add-hook 'term-exec-hook
-          (function
-           (lambda ()
-             (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix)))))
+                                      (function
+                                       (lambda ()
+                                         (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix)))))
 
 (use-package helpful
   :custom
@@ -297,15 +297,15 @@
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
   (load-theme 'doom-monokai-machine t))
 
-  ;; Enable flashing mode-line on errors
-  ;;(doom-themes-visual-bell-config)
-  ;; Enable custom neotree theme (all-the-icons must be installed!)
-  ;;(doom-themes-neotree-config)
-  ;; or for treemacs users
-  ;;(setq doom-themes-treemacs-theme "doom-atom")) ; use "doom-colors" for less minimal icon theme
-  ;;(doom-themes-treemacs-config)
-  ;; Corrects (and improves) org-mode's native fontification.
-  ;;(doom-themes-org-config))
+;; Enable flashing mode-line on errors
+;;(doom-themes-visual-bell-config)
+;; Enable custom neotree theme (all-the-icons must be installed!)
+;;(doom-themes-neotree-config)
+;; or for treemacs users
+;;(setq doom-themes-treemacs-theme "doom-atom")) ; use "doom-colors" for less minimal icon theme
+;;(doom-themes-treemacs-config)
+;; Corrects (and improves) org-mode's native fontification.
+;;(doom-themes-org-config))
 
 ;; Refresh a file edited outside of emacs
 (global-auto-revert-mode 1)
@@ -322,20 +322,20 @@
 
 ;; Disable line numbers in some scenarios
 (dolist (mode '(org-mode-hook
-              term-mode-hook
-              eshell-mode-hook
-              treemacs-mode-hook
-              shell-mode-hook
-              vterm-mode-hook
-              rustic-cargo-run-mode-hook
-              rustic-cargo-test-mode-hook
-              mu4e-headers-mode-hook
-              mu4e-view-mode-hook
-              mu4e-main-mode-hook
-              mu4e-org-mode-hook
-              mu4e-compose-mode-hook
-              eww-mode-hook
-              ))
+                term-mode-hook
+                eshell-mode-hook
+                treemacs-mode-hook
+                shell-mode-hook
+                vterm-mode-hook
+                rustic-cargo-run-mode-hook
+                rustic-cargo-test-mode-hook
+                mu4e-headers-mode-hook
+                mu4e-view-mode-hook
+                mu4e-main-mode-hook
+                mu4e-org-mode-hook
+                mu4e-compose-mode-hook
+                eww-mode-hook
+                ))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (setq-default truncate-lines t)
@@ -343,12 +343,12 @@
 (setq subword-mode 1)
 
 (setq backup-directory-alist '(("." . "~/.emacs.d/backup"))
-  backup-by-copying t    ; Don't delink hardlinks
-  version-control t      ; Use version numbers on backups
-  delete-old-versions t  ; Automatically delete excess backups
-  kept-new-versions 20   ; how many of the newest versions to keep
-  kept-old-versions 5    ; and how many of the old
-  )
+      backup-by-copying t    ; Don't delink hardlinks
+      version-control t      ; Use version numbers on backups
+      delete-old-versions t  ; Automatically delete excess backups
+      kept-new-versions 20   ; how many of the newest versions to keep
+      kept-old-versions 5    ; and how many of the old
+      )
 
 (setq-default indent-tabs-mode nil)
 (setq ivy-extra-directories nil)
@@ -362,16 +362,16 @@
     (setq dashboard-set-file-icons t)
     (setq dashboard-set-heading-icons t)
     (setq dashboard-set-footer nil)
-    (setq dashboard-startup-banner (my-random-dashboard-image-path)))
+    (setq dashboard-startup-banner (mm/random-dashboard-image-path)))
   :config
   (dashboard-setup-startup-hook)
-(setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
-(setq dashboard-items '(
-                        ;;(recents  . 4)
-                        ;;(projects . 3)
-                        ;;(agenda . 5)
-                        (bookmarks . 3)
-                        )))
+  (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+  (setq dashboard-items '(
+                          ;;(recents  . 4)
+                          ;;(projects . 3)
+                          ;;(agenda . 5)
+                          (bookmarks . 3)
+                          )))
 
 (use-package lsp-mode
   :ensure t
@@ -392,7 +392,7 @@
 (add-hook 'lsp-mode-hook #'yas-minor-mode-on)
 (add-hook 'lsp-mode-hook #'tree-sitter-hl-mode)
 (with-eval-after-load 'lsp-mode
-    (define-key lsp-mode-map (kbd "C-c l = =") 'my-match-lsp-formatting))
+  (define-key lsp-mode-map (kbd "C-c l = =") 'mm/match-lsp-formatting))
 
 ;; Better completions
 (use-package company
@@ -401,8 +401,8 @@
   :hook (lsp-mode . company-mode)
   :bind (:map company-active-map
               ("<tab>" . company-complete-selection))
-        (:map lsp-mode-map
-              ("<tab>" . company-indent-or-complete-common))
+  (:map lsp-mode-map
+        ("<tab>" . company-indent-or-complete-common))
   :custom
   (company-minimum-prefix-length 1)
   (company-idle-delay 0.0))
@@ -424,6 +424,7 @@
 (use-package lsp-treemacs
   :after lsp)
 (treemacs-project-follow-mode t)
+(setq treemacs--project-follow-delay 0.1)
 
 (with-eval-after-load 'lsp-mode
   (yas-global-mode))
@@ -463,8 +464,8 @@
 (add-hook 'java-mode-hook 'lsp)
 
 (add-hook 'LaTeX-mode-hook
-          (local-set-key (kbd "C-c C-. M-c") 'my-latex-compile)
-          (local-set-key (kbd "C-c C-. M-v") 'my-latex-compile-and-view)
+          (local-set-key (kbd "C-c C-. M-c") 'mm/latex-compile)
+          (local-set-key (kbd "C-c C-. M-v") 'mm/latex-compile-and-view)
           (lambda () (local-unset-key (kbd "C-j"))))
 (setq TeX-auto-save t)
 (setq TeX-parse-self t) 
@@ -481,73 +482,73 @@
 (add-hook 'go-mode-hook 'lsp)
 (add-hook 'go-mode-hook (lambda () (setq tab-width 4)))
 
-(defun my-org-mode-setup ()
-    (setq org-startup-indented t)
-    (org-indent-mode)
-    (variable-pitch-mode 1) ;;enable a non-monospace font
-    (auto-fill-mode 0)
-    (visual-line-mode 1))
+(defun mm/org-mode-setup ()
+  (setq org-startup-indented t)
+  (org-indent-mode)
+  (variable-pitch-mode 1) ;;enable a non-monospace font
+  (auto-fill-mode 0)
+  (visual-line-mode 1))
 
-  (use-package org
-    :ensure t
-    :hook (org-mode . my-org-mode-setup)
-    :config
-    (setq org-ellipsis " ⏷"
-          org-hide-emphasis-markers nil))
+(use-package org
+  :ensure t
+  :hook (org-mode . mm/org-mode-setup)
+  :config
+  (setq org-ellipsis " ⏷"
+        org-hide-emphasis-markers nil))
 
-  (use-package org-bullets
-    :ensure t
-    :after org
-    :hook (org-mode . org-bullets-mode)
-    :custom
-    (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+(use-package org-bullets
+  :ensure t
+  :after org
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
-  (require 'org-indent)
+(require 'org-indent)
 
-  (set-face-attribute 'org-document-title nil :font "Iosevka Aile" :weight 'bold :height 1.3)
-  (with-eval-after-load 'org-faces
-    (dolist (face '((org-level-1 . 1.25)
-                    (org-level-2 . 1.15)
-                    (org-level-3 . 1.05)
-                    (org-level-4 . 1.0)
-                    (org-level-5 . 1.0)
-                    (org-level-6 . 1.0)
-                    (org-level-7 . 1.1)
-                    (org-level-8 . 1.1)))
-      (set-face-attribute (car face) nil
-                          :font "Iosevka Aile"
-                          :height (cdr face))
-;; Ensure that anything that should be fixed-pitch in Org files appears that way
-(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-table nil  :inherit 'fixed-pitch)
-(set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
-(set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-document-title nil :font "Iosevka Aile" :weight 'bold :height 1.3)
+(with-eval-after-load 'org-faces
+  (dolist (face '((org-level-1 . 1.25)
+                  (org-level-2 . 1.15)
+                  (org-level-3 . 1.05)
+                  (org-level-4 . 1.0)
+                  (org-level-5 . 1.0)
+                  (org-level-6 . 1.0)
+                  (org-level-7 . 1.1)
+                  (org-level-8 . 1.1)))
+    (set-face-attribute (car face) nil
+                        :font "Iosevka Aile"
+                        :height (cdr face))
+    ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+    (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+    (set-face-attribute 'org-table nil  :inherit 'fixed-pitch)
+    (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+    (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
     ))
 
-  (defun my-org-mode-visual-fill ()
-    (setq visual-fill-column-width 100
-          visual-fill-column-center-text t)
-    (visual-fill-column-mode 1))
+(defun mm/org-mode-visual-fill ()
+  (setq visual-fill-column-width 100
+        visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
 
-  (use-package visual-fill-column
-    :ensure t
-    :hook (org-mode . my-org-mode-visual-fill))
+(use-package visual-fill-column
+  :ensure t
+  :hook (org-mode . mm/org-mode-visual-fill))
 
-  (use-package org-download
-    :ensure t
-    :hook org-mode-hook)
+(use-package org-download
+  :ensure t
+  :hook org-mode-hook)
 
-  (add-hook 'org-mode-hook
-            (lambda () (local-set-key (kbd "C-j") nil)))
+(add-hook 'org-mode-hook
+          (lambda () (local-set-key (kbd "C-j") nil)))
 
 
 
-  (with-eval-after-load 'org-mode-map (define-key org-mode-map (kbd "C-j") nil))
+(with-eval-after-load 'org-mode-map (define-key org-mode-map (kbd "C-j") nil))
 
 (use-package org-roam
   :ensure t
@@ -570,10 +571,10 @@
 (setq mu4e-trash-folder  "/trash")
 
 (setq   mu4e-maildir-shortcuts
-    '((:maildir "/archive" :key ?a)
-      (:maildir "/inbox"   :key ?i)
-      (:maildir "/work"    :key ?w)
-      (:maildir "/sent"    :key ?s)))
+        '((:maildir "/archive" :key ?a)
+          (:maildir "/inbox"   :key ?i)
+          (:maildir "/work"    :key ?w)
+          (:maildir "/sent"    :key ?s)))
 
 (setq mu4e-get-mail-command "offlineimap")
 (setq mu4e-compose-reply-to-address "michal.milek@student.put.poznan.pl"
@@ -586,12 +587,12 @@
 
 ;; smtp mail setting; these are the same that `gnus' uses.
 (setq
-   message-send-mail-function   'smtpmail-send-it
-   smtpmail-default-smtp-server "poczta.student.put.poznan.pl"
-   smtpmail-smtp-server         "poczta.student.put.poznan.pl"
-   smtpmail-local-domain        "student.put.poznan.pl"
-   smtpmail-smtp-service        587
-   )
+ message-send-mail-function   'smtpmail-send-it
+ smtpmail-default-smtp-server "poczta.student.put.poznan.pl"
+ smtpmail-smtp-server         "poczta.student.put.poznan.pl"
+ smtpmail-local-domain        "student.put.poznan.pl"
+ smtpmail-smtp-service        587
+ )
 
 (setq mu4e-use-fancy-chars nil)
 (setq mu4e-view-show-images t)
@@ -618,11 +619,11 @@
 (keyfreq-mode 1)
 (keyfreq-autosave-mode 1)
 (setq keyfreq-excluded-commands
-    '(self-insert-command
-      lsp-ui-doc--handle-mouse-movement
-      mwheel-scroll
-      ;;forward-char
-      ;;backward-char
-      ;;previous-line
-      ;;next-line
-      ))
+      '(self-insert-command
+        lsp-ui-doc--handle-mouse-movement
+        mwheel-scroll
+        ;;forward-char
+        ;;backward-char
+        ;;previous-line
+        ;;next-line
+        ))
