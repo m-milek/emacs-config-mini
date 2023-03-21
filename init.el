@@ -1,7 +1,100 @@
 (load-file "/home/michal/.emacs.d/my-elisp/my-latex-mode.el")
-(load-file "/home/michal/.emacs.d/my-elisp/my-random-dashboard-image.el")
-(load-file "/home/michal/.emacs.d/my-elisp/my-windows.el")
-(load-file "/home/michal/.emacs.d/my-elisp/my-utils.el")
+  (load-file "/home/michal/.emacs.d/my-elisp/my-random-dashboard-image.el")
+  (load-file "/home/michal/.emacs.d/my-elisp/my-windows.el")
+  (load-file "/home/michal/.emacs.d/my-elisp/my-utils.el")
+
+  (defun make-obsolete (obsolete-name current-name &optional when)
+  "Make the byte-compiler warn that function OBSOLETE-NAME is obsolete.
+OBSOLETE-NAME should be a function name or macro name (a symbol).
+
+The warning will say that CURRENT-NAME should be used instead.
+If CURRENT-NAME is a string, that is the `use instead' message
+\(it should end with a period, and not start with a capital).
+WHEN should be a string indicating when the function
+was first made obsolete, for example a date or a release number."
+  (declare (advertised-calling-convention
+            ;; New code should always provide the `when' argument.
+            (obsolete-name current-name when) "23.1"))
+  (put obsolete-name 'byte-obsolete-info
+       ;; The second entry used to hold the `byte-compile' handler, but
+       ;; is not used any more nowadays.
+       (purecopy (list current-name nil when)))
+  obsolete-name)
+
+(defmacro define-obsolete-function-alias (obsolete-name current-name
+                                                        &optional when docstring)
+  "Set OBSOLETE-NAME's function definition to CURRENT-NAME and mark it obsolete.
+
+\(define-obsolete-function-alias \\='old-fun \\='new-fun \"22.1\" \"old-fun's doc.\")
+
+is equivalent to the following two lines of code:
+
+\(defalias \\='old-fun \\='new-fun \"old-fun's doc.\")
+\(make-obsolete \\='old-fun \\='new-fun \"22.1\")
+
+WHEN should be a string indicating when the function was first
+made obsolete, for example a date or a release number.
+
+See the docstrings of `defalias' and `make-obsolete' for more details."
+  (declare (doc-string 4)
+           (advertised-calling-convention
+            ;; New code should always provide the `when' argument.
+            (obsolete-name current-name when &optional docstring) "23.1"))
+  `(progn
+     (defalias ,obsolete-name ,current-name ,docstring)
+     (make-obsolete ,obsolete-name ,current-name ,when)))
+
+(defun make-obsolete-variable (obsolete-name current-name &optional when access-type)
+  "Make the byte-compiler warn that OBSOLETE-NAME is obsolete.
+The warning will say that CURRENT-NAME should be used instead.
+If CURRENT-NAME is a string, that is the `use instead' message.
+WHEN should be a string indicating when the variable
+was first made obsolete, for example a date or a release number.
+ACCESS-TYPE if non-nil should specify the kind of access that will trigger
+  obsolescence warnings; it can be either `get' or `set'."
+  (declare (advertised-calling-convention
+            ;; New code should always provide the `when' argument.
+            (obsolete-name current-name when &optional access-type) "23.1"))
+  (put obsolete-name 'byte-obsolete-variable
+       (purecopy (list current-name access-type when)))
+  obsolete-name)
+
+(defmacro define-obsolete-variable-alias (obsolete-name current-name
+                                                        &optional when docstring)
+  "Make OBSOLETE-NAME a variable alias for CURRENT-NAME and mark it obsolete.
+This uses `defvaralias' and `make-obsolete-variable' (which see).
+See the Info node `(elisp)Variable Aliases' for more details.
+
+If CURRENT-NAME is a defcustom or a defvar (more generally, any variable
+where OBSOLETE-NAME may be set, e.g. in an init file, before the
+alias is defined), then the define-obsolete-variable-alias
+statement should be evaluated before the defcustom, if user
+customizations are to be respected.  The simplest way to achieve
+this is to place the alias statement before the defcustom (this
+is not necessary for aliases that are autoloaded, or in files
+dumped with Emacs).  This is so that any user customizations are
+applied before the defcustom tries to initialize the
+variable (this is due to the way `defvaralias' works).
+
+WHEN should be a string indicating when the variable was first
+made obsolete, for example a date or a release number.
+
+For the benefit of Customize, if OBSOLETE-NAME has
+any of the following properties, they are copied to
+CURRENT-NAME, if it does not already have them:
+`saved-value', `saved-variable-comment'."
+  (declare (doc-string 4)
+           (advertised-calling-convention
+            ;; New code should always provide the `when' argument.
+            (obsolete-name current-name when &optional docstring) "23.1"))
+  `(progn
+     (defvaralias ,obsolete-name ,current-name ,docstring)
+     ;; See Bug#4706.
+     (dolist (prop '(saved-value saved-variable-comment))
+       (and (get ,obsolete-name prop)
+            (null (get ,current-name prop))
+            (put ,current-name prop (get ,obsolete-name prop))))
+     (make-obsolete-variable ,obsolete-name ,current-name ,when)))
 
 (setq inhibit-startup-message t)
 (scroll-bar-mode 0);
@@ -127,8 +220,6 @@
 (global-set-key (kbd "C-c t") 'counsel-load-theme)
 (global-set-key (kbd "C-c F") 'counsel-org-file)
 
-(global-set-key (kbd "C-x K") 'mm/kill-everything)
-
 (global-set-key (kbd "C-t") 'goto-line-preview)
 
 (global-set-key (kbd "M-<up>") 'move-dup-move-lines-up)
@@ -143,6 +234,12 @@
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
+;; (global-unset-key (kbd "<right>"))
+;; (global-unset-key (kbd "<left>"))
+;; (global-unset-key (kbd "<up>"))
+;; (global-unset-key (kbd "<down>"))
+
+(global-set-key (kbd "C-x K") 'mm/kill-everything)
 (global-set-key (kbd "M-RET") 'mm/split-window-horizontally-and-focus-vterm)
 (global-set-key (kbd "C-x 2") 'mm/split-window-vertically-and-focus)
 (global-set-key (kbd "C-x 3") 'mm/split-window-horizontally-and-focus)
@@ -230,6 +327,9 @@
 (use-package goto-line-preview
   :ensure t)
 
+(use-package ess
+  :ensure t)
+
 (use-package vterm
   :ensure t
   :commands vterm
@@ -261,6 +361,7 @@
 (setq doom-modeline-mu4e t)
 (setq doom-modeline--battery-status t)
 (setq doom-modeline-time-icon t)
+    (display-battery-mode 1)
 
 (use-package dired
   :ensure nil
@@ -309,6 +410,8 @@
 
 ;; Refresh a file edited outside of emacs
 (global-auto-revert-mode 1)
+
+(global-subword-mode 1)
 
 ;; Auto close (), "", {}
 (electric-pair-mode 1)
@@ -372,6 +475,7 @@
                           ;;(agenda . 5)
                           (bookmarks . 3)
                           )))
+      ;;(setq dashboard-startup-banner (mm/random-dashboard-image-path)
 
 (use-package lsp-mode
   :ensure t
@@ -429,6 +533,16 @@
 (with-eval-after-load 'lsp-mode
   (yas-global-mode))
 
+(with-eval-after-load 'lsp-language-id-configuration
+  (add-to-list 'lsp-language-id-configuration '(".*\\.R$" . "r"))
+  (add-to-list 'lsp-language-id-configuration '(ess-mode . "r")))
+
+(with-eval-after-load 'lsp-mode
+  (lsp-register-client (make-lsp-client :new-connection
+                                        (lsp-stdio-connection '("R" "--slave" "-e" "languageserver::run()"))
+                                        :major-modes '(ess-r-mode inferior-ess-r-mode ess-mode)
+                                        :server-id 'lsp-R)))
+
 (use-package rustic
   :ensure t
   :hook (rustic-mode . lsp-deferred)
@@ -444,12 +558,14 @@
   :config
   (setq typescript-indent-level 2)
   (setq js-indent-level 2)
-  (add-hook 'js-mode-hook 'lsp))
+  (add-hook 'js-mode-hook 'lsp)
+  (add-hook 'typescript-mode-hook 'lsp))
 
 (add-hook 'c-mode-hook 'lsp)
 (add-hook 'c-mode-hook 'tree-sitter-hl-mode)
 (setq-default c-basic-offset 4)
 (add-hook 'c++-mode-hook 'rebind)
+(add-hook 'c++-mode-hook (lambda () (local-unset-key (kbd "C-M-h"))))
 (add-hook 'c++-mode-hook 'tree-sitter-hl-mode)
 (add-hook 'c++-mode-hook 'lsp)
 (setq-default c++-basic-offset 4)
@@ -476,6 +592,7 @@
 ;; ## end of OPAM user-setup addition for emacs / base ## keep this line
 
 (add-hook 'emacs-lisp-mode-hook 'company-mode)
+(add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
 
 (use-package go-mode
   :ensure t)
@@ -546,9 +663,74 @@
 (add-hook 'org-mode-hook
           (lambda () (local-set-key (kbd "C-j") nil)))
 
-
-
 (with-eval-after-load 'org-mode-map (define-key org-mode-map (kbd "C-j") nil))
+
+(setq org-agenda-files (directory-files-recursively "~/Semester-4" "\\.org$" nil nil t))
+
+(setq org-agenda-start-with-log-mode t)
+(setq org-log-done 'time)
+(setq org-log-into-drawer t)
+
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")))
+
+(setq org-tag-alist
+      '((:startgroup)
+        ;; Put mutually exclusive tags here
+        (:endgroup)
+        ("@home" . ?H)
+        ("@work" . ?W)
+        ("@put" . ?p)
+        ("note" . ?n)
+        ("idea" . ?i)))
+
+;; Configure custom agenda views
+(setq org-agenda-custom-commands
+      '(("d" "Dashboard"
+         ((agenda "" ((org-deadline-warning-days 14)))
+          (todo "NEXT"
+                ((org-agenda-overriding-header "Next Tasks")))
+          (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
+
+        ("n" "Next Tasks"
+         ((todo "NEXT"
+                ((org-agenda-overriding-header "Next Tasks")))))
+
+        ("p" "PUT Tasks" tags-todo "+put")
+
+        ;; Low-effort next actions
+        ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
+         ((org-agenda-overriding-header "Low Effort Tasks")
+          (org-agenda-max-todos 20)
+          (org-agenda-files org-agenda-files)))
+
+        ("w" "Workflow Status"
+         ((todo "WAIT"
+                ((org-agenda-overriding-header "Waiting on External")
+                 (org-agenda-files org-agenda-files)))
+          (todo "REVIEW"
+                ((org-agenda-overriding-header "In Review")
+                 (org-agenda-files org-agenda-files)))
+          (todo "PLAN"
+                ((org-agenda-overriding-header "In Planning")
+                 (org-agenda-todo-list-sublevels nil)
+                 (org-agenda-files org-agenda-files)))
+          (todo "BACKLOG"
+                ((org-agenda-overriding-header "Project Backlog")
+                 (org-agenda-todo-list-sublevels nil)
+                 (org-agenda-files org-agenda-files)))
+          (todo "READY"
+                ((org-agenda-overriding-header "Ready for Work")
+                 (org-agenda-files org-agenda-files)))
+          (todo "ACTIVE"
+                ((org-agenda-overriding-header "Active Projects")
+                 (org-agenda-files org-agenda-files)))
+          (todo "COMPLETED"
+                ((org-agenda-overriding-header "Completed Projects")
+                 (org-agenda-files org-agenda-files)))
+          (todo "CANC"
+                ((org-agenda-overriding-header "Cancelled Projects")
+                 (org-agenda-files org-agenda-files)))))))
 
 (use-package org-roam
   :ensure t

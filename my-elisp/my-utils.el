@@ -18,7 +18,7 @@
     (forward-line 1)))
 
 (defun mm/save-point ()
-  "Save the current frame, window and point in a buffer"
+  "Save the current frame, window and point in a buffer."
   (interactive)
   (setq my-saved-frame (selected-frame))
   (setq my-saved-window (frame-selected-window))
@@ -63,3 +63,46 @@ set mark from my-saved-mark"
         (split-window-below vterm-size)
         (other-window 1)
         (switch-to-buffer vterm-buffer))))))
+
+
+(setq mm-put-org-dirs '("~/Semester-4"))
+
+(defun mm/transform-filename (s) s)
+
+(defun mm/choose-put-org-file ()
+  (interactive)
+  (let ((filename
+         (ivy-completing-read
+          "Select the PUT .org file: "
+          (mapcar (lambda (s) (mm/transform-filename s))
+                  (flatten-list
+                   (mapcar
+                    (lambda (dir)
+                      (directory-files-recursively dir "\\.org$" nil nil t))
+                    mm-put-org-dirs))))))
+    (progn
+      (split-window-horizontally)
+      (other-window 1)
+      (find-file filename))))
+
+(defun mm/hashdef-comment-region ()
+  "Comment a block using #if 0 and #endif."
+  (interactive)
+  (let ((end (region-end)))
+    (progn
+      (goto-char (region-beginning))
+      (open-line 1)
+      (insert "#if 0")
+      (goto-char end)
+      (end-of-line)
+      (forward-line 1)
+      (open-line 1)
+      (insert "#endif")
+      )
+    ))
+
+(defun mm/hashdef-uncomment-region ()
+  "Uncomment a block commented with #if 0 and endif."
+  )
+
+
