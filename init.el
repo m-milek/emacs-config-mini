@@ -2,6 +2,7 @@
   (load-file "/home/michal/.emacs.d/my-elisp/my-random-dashboard-image.el")
   (load-file "/home/michal/.emacs.d/my-elisp/my-windows.el")
   (load-file "/home/michal/.emacs.d/my-elisp/my-utils.el")
+  (load-file "/home/michal/.emacs.d/my-elisp/char-summary.el")
 
   (defun make-obsolete (obsolete-name current-name &optional when)
   "Make the byte-compiler warn that function OBSOLETE-NAME is obsolete.
@@ -234,10 +235,10 @@ CURRENT-NAME, if it does not already have them:
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
-;; (global-unset-key (kbd "<right>"))
-;; (global-unset-key (kbd "<left>"))
-;; (global-unset-key (kbd "<up>"))
-;; (global-unset-key (kbd "<down>"))
+;(global-unset-key (kbd "<right>"))
+;(global-unset-key (kbd "<left>"))
+;(global-unset-key (kbd "<up>"))
+;(global-unset-key (kbd "<down>"))
 
 (global-set-key (kbd "C-x K") 'mm/kill-everything)
 (global-set-key (kbd "M-RET") 'mm/split-window-horizontally-and-focus-vterm)
@@ -396,7 +397,7 @@ CURRENT-NAME, if it does not already have them:
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-monokai-machine t))
+  (load-theme 'doom-solarized-dark t))
 
 ;; Enable flashing mode-line on errors
 ;;(doom-themes-visual-bell-config)
@@ -472,7 +473,7 @@ CURRENT-NAME, if it does not already have them:
   (setq dashboard-items '(
                           ;;(recents  . 4)
                           ;;(projects . 3)
-                          ;;(agenda . 5)
+                          (agenda . 3)
                           (bookmarks . 3)
                           )))
       ;;(setq dashboard-startup-banner (mm/random-dashboard-image-path)
@@ -484,7 +485,6 @@ CURRENT-NAME, if it does not already have them:
   (setq lsp-keymap-prefix "C-c l")
   :config
   (lsp-enable-which-key-integration t))
-
 
 ;; Increase the amount of data which Emacs reads from the process.
 ;; Default value is causing a slowdown, it's too low to handle server responses.
@@ -522,7 +522,7 @@ CURRENT-NAME, if it does not already have them:
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
   :config
-  (setq lsp-ui-doc-enable t)
+  (setq lsp-ui-doc-enable nil)
   (setq lsp-ui-doc-position 'bottom))
 
 (use-package lsp-treemacs
@@ -565,7 +565,6 @@ CURRENT-NAME, if it does not already have them:
 (add-hook 'c-mode-hook 'tree-sitter-hl-mode)
 (setq-default c-basic-offset 4)
 (add-hook 'c++-mode-hook 'rebind)
-(add-hook 'c++-mode-hook (lambda () (local-unset-key (kbd "C-M-h"))))
 (add-hook 'c++-mode-hook 'tree-sitter-hl-mode)
 (add-hook 'c++-mode-hook 'lsp)
 (setq-default c++-basic-offset 4)
@@ -665,7 +664,8 @@ CURRENT-NAME, if it does not already have them:
 
 (with-eval-after-load 'org-mode-map (define-key org-mode-map (kbd "C-j") nil))
 
-(setq org-agenda-files (directory-files-recursively "~/Semester-4" "\\.org$" nil nil t))
+(setq agenda-dirs '("~/Semester-4" "~/Documents/org"))
+(setq org-agenda-files (-flatten-n 1 (mapcar (lambda (dir) (directory-files-recursively dir "\\.org$" nil nil t)) agenda-dirs)))
 
 (setq org-agenda-start-with-log-mode t)
 (setq org-log-done 'time)
