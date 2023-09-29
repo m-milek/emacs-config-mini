@@ -117,12 +117,12 @@ This makes for a minimal Emacs UI, without distracting icons and menus.
 #+BEGIN_SRC elisp
   (setq inhibit-startup-message t)
   (scroll-bar-mode 0);
-                                          ;visual scrollbar
+  ;; visual scrollbar
   (tool-bar-mode 0)
   (tooltip-mode 0);
   (set-fringe-mode 0);
   (menu-bar-mode 0)
-                                          ; set up visible bell
+  ;; set up visible bell
   (setq visible-bell nil)
   (global-visual-line-mode -1)
 #+END_SRC
@@ -152,7 +152,7 @@ My configuration uses src_elisp{use-package} as its package management utility.
 
   (require 'package)
   (setq package-archives '(
-                           ;;("melpa" . "https://melpa.org/packages/")
+                           ("melpa" . "https://melpa.org/packages/")
                            ("melpa-stable" . "https://stable.melpa.org/packages/")
                            ("org" . "https://orgmode.org/elpa/")
                            ("elpa" . "https://elpa.gnu.org/packages/")))
@@ -176,7 +176,7 @@ My configuration uses src_elisp{use-package} as its package management utility.
   (use-package ivy
     :diminish
     :bind (
-                                          ;("C-s" . swiper)
+           ;;("C-s" . swiper)
            :map ivy-minibuffer-map
            ("TAB" . ivy-alt-done)
            ("C-l" . ivy-alt-done)
@@ -269,10 +269,10 @@ My configuration uses src_elisp{use-package} as its package management utility.
 
   (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
-  ;(global-unset-key (kbd "<right>"))
-  ;(global-unset-key (kbd "<left>"))
-  ;(global-unset-key (kbd "<up>"))
-  ;(global-unset-key (kbd "<down>"))
+  ;;(global-unset-key (kbd "<right>"))
+  ;;(global-unset-key (kbd "<left>"))
+  ;;(global-unset-key (kbd "<up>"))
+  ;;(global-unset-key (kbd "<down>"))
 #+END_SRC
 
 ** My Elisp
@@ -374,6 +374,21 @@ My configuration uses src_elisp{use-package} as its package management utility.
     (use-package ess
       :ensure t)
 
+    (use-package avy
+      :bind
+      ("M-s" . avy-goto-char))
+
+    (use-package ace-window
+      :ensure t
+      :bind
+      ("M-o" . ace-window))
+
+    (use-package restclient
+      :ensure t)
+
+    (use-package compat
+      :ensure t)
+
 #+END_SRC
 
 * Vterm
@@ -461,16 +476,6 @@ My configuration uses src_elisp{use-package} as its package management utility.
     (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
           doom-themes-enable-italic t) ; if nil, italics is universally disabled
     (load-theme 'doom-solarized-dark t))
-
-  ;; Enable flashing mode-line on errors
-  ;;(doom-themes-visual-bell-config)
-  ;; Enable custom neotree theme (all-the-icons must be installed!)
-  ;;(doom-themes-neotree-config)
-  ;; or for treemacs users
-  ;;(setq doom-themes-treemacs-theme "doom-atom")) ; use "doom-colors" for less minimal icon theme
-  ;;(doom-themes-treemacs-config)
-  ;; Corrects (and improves) org-mode's native fontification.
-  ;;(doom-themes-org-config))
 #+END_SRC
 
 * Vanilla Emacs Customizations
@@ -489,6 +494,7 @@ My configuration uses src_elisp{use-package} as its package management utility.
 
   (column-number-mode)
   (global-display-line-numbers-mode)
+  (defalias 'yes-or-no-p 'y-or-n-p)
 
   ;; Disable line numbers in some scenarios
   (dolist (mode '(org-mode-hook
@@ -523,6 +529,7 @@ My configuration uses src_elisp{use-package} as its package management utility.
   (setq-default indent-tabs-mode nil)
   (setq ivy-extra-directories nil)
 
+  (pixel-scroll-precision-mode 1)
 
 #+END_SRC
 
@@ -544,7 +551,7 @@ My configuration uses src_elisp{use-package} as its package management utility.
     (setq dashboard-items '(
                             ;;(recents  . 4)
                             ;;(projects . 3)
-                            (agenda . 3)
+                            ;;(agenda . 3)
                             (bookmarks . 3)
                             )))
         ;;(setq dashboard-startup-banner (mm/random-dashboard-image-path)
@@ -596,7 +603,7 @@ My configuration uses src_elisp{use-package} as its package management utility.
   (use-package lsp-ui
     :hook (lsp-mode . lsp-ui-mode)
     :config
-    (setq lsp-ui-doc-enable nil)
+    (setq lsp-ui-doc-enable t)
     (setq lsp-ui-doc-position 'bottom))
 
   (use-package lsp-treemacs
@@ -627,7 +634,10 @@ My configuration uses src_elisp{use-package} as its package management utility.
     :hook (rustic-mode . tree-sitter-hl-mode)
     :config
     (require 'lsp-rust)
-    (setq lsp-rust-analyzer-completion-add-call-parenthesis t))
+    (setq lsp-rust-analyzer-completion-add-call-parenthesis t)
+    (setq rust-indent-method-chain t))
+  (use-package flycheck-rust
+    :ensure t)
 #+END_SRC
 
 ** JavaScript/TypeScript
@@ -641,7 +651,6 @@ My configuration uses src_elisp{use-package} as its package management utility.
       (setq js-indent-level 2)
       (add-hook 'js-mode-hook 'lsp)
       (add-hook 'typescript-mode-hook 'lsp))
-
 #+END_SRC
 
 ** C/C++
@@ -697,6 +706,15 @@ My configuration uses src_elisp{use-package} as its package management utility.
   (add-hook 'go-mode-hook 'lsp)
   (add-hook 'go-mode-hook (lambda () (setq tab-width 4)))
 #+END_SRC
+** Common Lisp
+#+BEGIN_SRC elisp
+  (load (expand-file-name "~/quicklisp/slime-helper.el"))
+  ;; Replace "sbcl" with the path to your implementation
+  (setq inferior-lisp-program "/usr/bin/sbcl")
+  (use-package slime
+    :ensure t)
+#+END_SRC
+
 * Org
 #+BEGIN_SRC elisp
   (defun mm/org-mode-setup ()
@@ -765,8 +783,8 @@ My configuration uses src_elisp{use-package} as its package management utility.
 
   (with-eval-after-load 'org-mode-map (define-key org-mode-map (kbd "C-j") nil))
 
-  (setq agenda-dirs '("~/Semester-4" "~/Documents/org"))
-  (setq org-agenda-files (-flatten-n 1 (mapcar (lambda (dir) (directory-files-recursively dir "\\.org$" nil nil t)) agenda-dirs)))
+(setq agenda-dirs '("~/Semester-4" "~/Documents/org"))
+(setq org-agenda-files (-flatten-n 1 (mapcar (lambda (dir) (directory-files-recursively dir "\\.org$" nil nil t)) agenda-dirs)))
 
   (setq org-agenda-start-with-log-mode t)
   (setq org-log-done 'time)
@@ -852,7 +870,7 @@ My configuration uses src_elisp{use-package} as its package management utility.
 
 * mu4e
 #+BEGIN_SRC elisp
-  (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
+  (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e")
 
   (require 'mu4e)
 

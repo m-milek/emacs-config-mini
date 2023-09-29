@@ -101,8 +101,8 @@ set mark from my-saved-mark"
       )
     ))
 
-(defun mm/hashdef-uncomment-region ()
-  "Uncomment a block commented with #if 0 and endif."
-  )
-
-
+(defun mm/find-file-or-projectile-find-file ()
+  (interactive)
+  (if (projectile-mode)
+      (counsel-projectile-find-file)
+    (counsel-find-file)))

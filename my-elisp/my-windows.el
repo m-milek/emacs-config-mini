@@ -10,7 +10,6 @@
 
 (defun mm/split-window-horizontally-and-focus-vterm ()
   (interactive)
-  (split-window-right)
-  (other-window 1)
+  (mm/split-window-horizontally-and-focus)
   (vterm))
 

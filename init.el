@@ -99,12 +99,12 @@ CURRENT-NAME, if it does not already have them:
 
 (setq inhibit-startup-message t)
 (scroll-bar-mode 0);
-                                        ;visual scrollbar
+;; visual scrollbar
 (tool-bar-mode 0)
 (tooltip-mode 0);
 (set-fringe-mode 0);
 (menu-bar-mode 0)
-                                        ; set up visible bell
+;; set up visible bell
 (setq visible-bell nil)
 (global-visual-line-mode -1)
 
@@ -126,7 +126,7 @@ CURRENT-NAME, if it does not already have them:
 
 (require 'package)
 (setq package-archives '(
-                         ;;("melpa" . "https://melpa.org/packages/")
+                         ("melpa" . "https://melpa.org/packages/")
                          ("melpa-stable" . "https://stable.melpa.org/packages/")
                          ("org" . "https://orgmode.org/elpa/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
@@ -147,7 +147,7 @@ CURRENT-NAME, if it does not already have them:
 (use-package ivy
   :diminish
   :bind (
-                                        ;("C-s" . swiper)
+         ;;("C-s" . swiper)
          :map ivy-minibuffer-map
          ("TAB" . ivy-alt-done)
          ("C-l" . ivy-alt-done)
@@ -235,10 +235,10 @@ CURRENT-NAME, if it does not already have them:
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
-;(global-unset-key (kbd "<right>"))
-;(global-unset-key (kbd "<left>"))
-;(global-unset-key (kbd "<up>"))
-;(global-unset-key (kbd "<down>"))
+;;(global-unset-key (kbd "<right>"))
+;;(global-unset-key (kbd "<left>"))
+;;(global-unset-key (kbd "<up>"))
+;;(global-unset-key (kbd "<down>"))
 
 (global-set-key (kbd "C-x K") 'mm/kill-everything)
 (global-set-key (kbd "M-RET") 'mm/split-window-horizontally-and-focus-vterm)
@@ -331,6 +331,21 @@ CURRENT-NAME, if it does not already have them:
 (use-package ess
   :ensure t)
 
+(use-package avy
+  :bind
+  ("M-s" . avy-goto-char))
+
+(use-package ace-window
+  :ensure t
+  :bind
+  ("M-o" . ace-window))
+
+(use-package restclient
+  :ensure t)
+
+(use-package focus
+  :ensure t)
+
 (use-package vterm
   :ensure t
   :commands vterm
@@ -399,16 +414,6 @@ CURRENT-NAME, if it does not already have them:
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
   (load-theme 'doom-solarized-dark t))
 
-;; Enable flashing mode-line on errors
-;;(doom-themes-visual-bell-config)
-;; Enable custom neotree theme (all-the-icons must be installed!)
-;;(doom-themes-neotree-config)
-;; or for treemacs users
-;;(setq doom-themes-treemacs-theme "doom-atom")) ; use "doom-colors" for less minimal icon theme
-;;(doom-themes-treemacs-config)
-;; Corrects (and improves) org-mode's native fontification.
-;;(doom-themes-org-config))
-
 ;; Refresh a file edited outside of emacs
 (global-auto-revert-mode 1)
 
@@ -423,6 +428,7 @@ CURRENT-NAME, if it does not already have them:
 
 (column-number-mode)
 (global-display-line-numbers-mode)
+(defalias 'yes-or-no-p 'y-or-n-p)
 
 ;; Disable line numbers in some scenarios
 (dolist (mode '(org-mode-hook
@@ -457,6 +463,8 @@ CURRENT-NAME, if it does not already have them:
 (setq-default indent-tabs-mode nil)
 (setq ivy-extra-directories nil)
 
+(pixel-scroll-precision-mode 1)
+
 (use-package dashboard
   :ensure t
   :init
@@ -473,7 +481,7 @@ CURRENT-NAME, if it does not already have them:
   (setq dashboard-items '(
                           ;;(recents  . 4)
                           ;;(projects . 3)
-                          (agenda . 3)
+                          ;;(agenda . 3)
                           (bookmarks . 3)
                           )))
       ;;(setq dashboard-startup-banner (mm/random-dashboard-image-path)
@@ -522,7 +530,7 @@ CURRENT-NAME, if it does not already have them:
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
   :config
-  (setq lsp-ui-doc-enable nil)
+  (setq lsp-ui-doc-enable t)
   (setq lsp-ui-doc-position 'bottom))
 
 (use-package lsp-treemacs
@@ -549,7 +557,10 @@ CURRENT-NAME, if it does not already have them:
   :hook (rustic-mode . tree-sitter-hl-mode)
   :config
   (require 'lsp-rust)
-  (setq lsp-rust-analyzer-completion-add-call-parenthesis t))
+  (setq lsp-rust-analyzer-completion-add-call-parenthesis t)
+  (setq rust-indent-method-chain t))
+(use-package flycheck-rust
+  :ensure t)
 
 (use-package typescript-mode
   :mode "\\.ts\\'"
@@ -598,139 +609,145 @@ CURRENT-NAME, if it does not already have them:
 (add-hook 'go-mode-hook 'lsp)
 (add-hook 'go-mode-hook (lambda () (setq tab-width 4)))
 
+(load (expand-file-name "~/quicklisp/slime-helper.el"))
+;; Replace "sbcl" with the path to your implementation
+(setq inferior-lisp-program "/usr/bin/sbcl")
+(use-package slime
+  :ensure t)
+
 (defun mm/org-mode-setup ()
-  (setq org-startup-indented t)
-  (org-indent-mode)
-  (variable-pitch-mode 1) ;;enable a non-monospace font
-  (auto-fill-mode 0)
-  (visual-line-mode 1))
+    (setq org-startup-indented t)
+    (org-indent-mode)
+    (variable-pitch-mode 1) ;;enable a non-monospace font
+    (auto-fill-mode 0)
+    (visual-line-mode 1))
 
-(use-package org
-  :ensure t
-  :hook (org-mode . mm/org-mode-setup)
-  :config
-  (setq org-ellipsis " ⏷"
-        org-hide-emphasis-markers nil))
+  (use-package org
+    :ensure t
+    :hook (org-mode . mm/org-mode-setup)
+    :config
+    (setq org-ellipsis " ⏷"
+          org-hide-emphasis-markers nil))
 
-(use-package org-bullets
-  :ensure t
-  :after org
-  :hook (org-mode . org-bullets-mode)
-  :custom
-  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+  (use-package org-bullets
+    :ensure t
+    :after org
+    :hook (org-mode . org-bullets-mode)
+    :custom
+    (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
-(require 'org-indent)
+  (require 'org-indent)
 
-(set-face-attribute 'org-document-title nil :font "Iosevka Aile" :weight 'bold :height 1.3)
-(with-eval-after-load 'org-faces
-  (dolist (face '((org-level-1 . 1.25)
-                  (org-level-2 . 1.15)
-                  (org-level-3 . 1.05)
-                  (org-level-4 . 1.0)
-                  (org-level-5 . 1.0)
-                  (org-level-6 . 1.0)
-                  (org-level-7 . 1.1)
-                  (org-level-8 . 1.1)))
-    (set-face-attribute (car face) nil
-                        :font "Iosevka Aile"
-                        :height (cdr face))
-    ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-    (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-    (set-face-attribute 'org-table nil  :inherit 'fixed-pitch)
-    (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
-    (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-    (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-    (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
-    ))
+  (set-face-attribute 'org-document-title nil :font "Iosevka Aile" :weight 'bold :height 1.3)
+  (with-eval-after-load 'org-faces
+    (dolist (face '((org-level-1 . 1.25)
+                    (org-level-2 . 1.15)
+                    (org-level-3 . 1.05)
+                    (org-level-4 . 1.0)
+                    (org-level-5 . 1.0)
+                    (org-level-6 . 1.0)
+                    (org-level-7 . 1.1)
+                    (org-level-8 . 1.1)))
+      (set-face-attribute (car face) nil
+                          :font "Iosevka Aile"
+                          :height (cdr face))
+      ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+      (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+      (set-face-attribute 'org-table nil  :inherit 'fixed-pitch)
+      (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+      (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+      (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+      (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+      (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+      (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+      (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+      ))
 
-(defun mm/org-mode-visual-fill ()
-  (setq visual-fill-column-width 100
-        visual-fill-column-center-text t)
-  (visual-fill-column-mode 1))
+  (defun mm/org-mode-visual-fill ()
+    (setq visual-fill-column-width 100
+          visual-fill-column-center-text t)
+    (visual-fill-column-mode 1))
 
-(use-package visual-fill-column
-  :ensure t
-  :hook (org-mode . mm/org-mode-visual-fill))
+  (use-package visual-fill-column
+    :ensure t
+    :hook (org-mode . mm/org-mode-visual-fill))
 
-(use-package org-download
-  :ensure t
-  :hook org-mode-hook)
+  (use-package org-download
+    :ensure t
+    :hook org-mode-hook)
 
-(add-hook 'org-mode-hook
-          (lambda () (local-set-key (kbd "C-j") nil)))
+  (add-hook 'org-mode-hook
+            (lambda () (local-set-key (kbd "C-j") nil)))
 
-(with-eval-after-load 'org-mode-map (define-key org-mode-map (kbd "C-j") nil))
+  (with-eval-after-load 'org-mode-map (define-key org-mode-map (kbd "C-j") nil))
 
 (setq agenda-dirs '("~/Semester-4" "~/Documents/org"))
 (setq org-agenda-files (-flatten-n 1 (mapcar (lambda (dir) (directory-files-recursively dir "\\.org$" nil nil t)) agenda-dirs)))
 
-(setq org-agenda-start-with-log-mode t)
-(setq org-log-done 'time)
-(setq org-log-into-drawer t)
+  (setq org-agenda-start-with-log-mode t)
+  (setq org-log-done 'time)
+  (setq org-log-into-drawer t)
 
-(setq org-todo-keywords
-      '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")))
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")))
 
-(setq org-tag-alist
-      '((:startgroup)
-        ;; Put mutually exclusive tags here
-        (:endgroup)
-        ("@home" . ?H)
-        ("@work" . ?W)
-        ("@put" . ?p)
-        ("note" . ?n)
-        ("idea" . ?i)))
+  (setq org-tag-alist
+        '((:startgroup)
+          ;; Put mutually exclusive tags here
+          (:endgroup)
+          ("@home" . ?H)
+          ("@work" . ?W)
+          ("@put" . ?p)
+          ("note" . ?n)
+          ("idea" . ?i)))
 
-;; Configure custom agenda views
-(setq org-agenda-custom-commands
-      '(("d" "Dashboard"
-         ((agenda "" ((org-deadline-warning-days 14)))
-          (todo "NEXT"
-                ((org-agenda-overriding-header "Next Tasks")))
-          (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
+  ;; Configure custom agenda views
+  (setq org-agenda-custom-commands
+        '(("d" "Dashboard"
+           ((agenda "" ((org-deadline-warning-days 14)))
+            (todo "NEXT"
+                  ((org-agenda-overriding-header "Next Tasks")))
+            (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
 
-        ("n" "Next Tasks"
-         ((todo "NEXT"
-                ((org-agenda-overriding-header "Next Tasks")))))
+          ("n" "Next Tasks"
+           ((todo "NEXT"
+                  ((org-agenda-overriding-header "Next Tasks")))))
 
-        ("p" "PUT Tasks" tags-todo "+put")
+          ("p" "PUT Tasks" tags-todo "+put")
 
-        ;; Low-effort next actions
-        ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
-         ((org-agenda-overriding-header "Low Effort Tasks")
-          (org-agenda-max-todos 20)
-          (org-agenda-files org-agenda-files)))
+          ;; Low-effort next actions
+          ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
+           ((org-agenda-overriding-header "Low Effort Tasks")
+            (org-agenda-max-todos 20)
+            (org-agenda-files org-agenda-files)))
 
-        ("w" "Workflow Status"
-         ((todo "WAIT"
-                ((org-agenda-overriding-header "Waiting on External")
-                 (org-agenda-files org-agenda-files)))
-          (todo "REVIEW"
-                ((org-agenda-overriding-header "In Review")
-                 (org-agenda-files org-agenda-files)))
-          (todo "PLAN"
-                ((org-agenda-overriding-header "In Planning")
-                 (org-agenda-todo-list-sublevels nil)
-                 (org-agenda-files org-agenda-files)))
-          (todo "BACKLOG"
-                ((org-agenda-overriding-header "Project Backlog")
-                 (org-agenda-todo-list-sublevels nil)
-                 (org-agenda-files org-agenda-files)))
-          (todo "READY"
-                ((org-agenda-overriding-header "Ready for Work")
-                 (org-agenda-files org-agenda-files)))
-          (todo "ACTIVE"
-                ((org-agenda-overriding-header "Active Projects")
-                 (org-agenda-files org-agenda-files)))
-          (todo "COMPLETED"
-                ((org-agenda-overriding-header "Completed Projects")
-                 (org-agenda-files org-agenda-files)))
-          (todo "CANC"
-                ((org-agenda-overriding-header "Cancelled Projects")
-                 (org-agenda-files org-agenda-files)))))))
+          ("w" "Workflow Status"
+           ((todo "WAIT"
+                  ((org-agenda-overriding-header "Waiting on External")
+                   (org-agenda-files org-agenda-files)))
+            (todo "REVIEW"
+                  ((org-agenda-overriding-header "In Review")
+                   (org-agenda-files org-agenda-files)))
+            (todo "PLAN"
+                  ((org-agenda-overriding-header "In Planning")
+                   (org-agenda-todo-list-sublevels nil)
+                   (org-agenda-files org-agenda-files)))
+            (todo "BACKLOG"
+                  ((org-agenda-overriding-header "Project Backlog")
+                   (org-agenda-todo-list-sublevels nil)
+                   (org-agenda-files org-agenda-files)))
+            (todo "READY"
+                  ((org-agenda-overriding-header "Ready for Work")
+                   (org-agenda-files org-agenda-files)))
+            (todo "ACTIVE"
+                  ((org-agenda-overriding-header "Active Projects")
+                   (org-agenda-files org-agenda-files)))
+            (todo "COMPLETED"
+                  ((org-agenda-overriding-header "Completed Projects")
+                   (org-agenda-files org-agenda-files)))
+            (todo "CANC"
+                  ((org-agenda-overriding-header "Cancelled Projects")
+                   (org-agenda-files org-agenda-files)))))))
 
 (use-package org-roam
   :ensure t
@@ -742,7 +759,7 @@ CURRENT-NAME, if it does not already have them:
   :config
   (org-roam-setup))
 
-(add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
+(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e")
 
 (require 'mu4e)
 
